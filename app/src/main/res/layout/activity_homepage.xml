@@ -28,7 +28,7 @@
             android:id="@+id/btnAddMedication"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@android:color/transparent"
+            android:background="@null"
             android:src="@android:drawable/ic_input_add"
             android:tint="#FFFFFF"
             android:contentDescription="Add Medication"/>
@@ -113,10 +113,14 @@
             android:clickable="true"
             android:focusable="true">
 
-            <ImageView
+            <ImageButton
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:id="@+id/homeButton"
                 android:src="@drawable/ic_homepage"
+                android:contentDescription="Home "
+                android:background="@null"
+                android:scaleType="fitCenter"
                 android:tint="#FFFFFF"/>
         </LinearLayout>
 
@@ -129,10 +133,14 @@
             android:clickable="true"
             android:focusable="true">
 
-            <ImageView
+            <ImageButton
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:id="@+id/recordsButton"
                 android:src="@drawable/ic_records"
+                android:contentDescription="Records"
+                android:background="@null"
+                android:scaleType="fitCenter"
                 android:tint="#FFFFFF"/>
         </LinearLayout>
 
@@ -145,10 +153,14 @@
             android:clickable="true"
             android:focusable="true">
 
-            <ImageView
+            <ImageButton
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:id="@+id/inventoryButton"
                 android:src="@drawable/ic_inventory"
+                android:contentDescription="Inventory"
+                android:background="@null"
+                android:scaleType="fitCenter"
                 android:tint="#FFFFFF"/>
         </LinearLayout>
 
@@ -161,10 +173,14 @@
             android:clickable="true"
             android:focusable="true">
 
-            <ImageView
+            <ImageButton
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:id="@+id/settingsButton"
                 android:src="@drawable/ic_settings"
+                android:contentDescription="Settings"
+                android:background="@null"
+                android:scaleType="fitCenter"
                 android:tint="#FFFFFF"/>
         </LinearLayout>
 

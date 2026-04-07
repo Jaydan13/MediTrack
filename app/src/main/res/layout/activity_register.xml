@@ -1,10 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Register">
+    android:orientation="vertical"
+    android:gravity="center">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="30dp">
+
+        <!-- Email Input -->
+        <EditText
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/newEmail"
+            android:inputType="textEmailAddress"
+            android:hint="Email"
+            android:layout_marginBottom="10dp"
+            android:layout_gravity="center" />
+
+        <!-- Password Input -->
+        <EditText
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/newPass"
+            android:inputType="textPassword"
+            android:hint="Password"
+            android:layout_marginBottom="10dp"
+            android:layout_gravity="center" />
+
+        <!-- Check Password -->
+        <EditText
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/checkNewPass"
+            android:inputType="textPassword"
+            android:hint="Confirm Password"
+            android:layout_marginBottom="10dp"
+            android:layout_gravity="center" />
+
+        <!-- Username Input -->
+        <EditText
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/username"
+            android:inputType="text"
+            android:hint="Username"
+            android:layout_marginBottom="10dp"
+            android:layout_gravity="center" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <!-- Go Back to Login Button -->
+            <Button
+                android:layout_width="115dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/loginReturnBtn"
+                android:text="Back"
+                android:layout_marginRight="5dp" />
+
+            <!-- Register Button -->
+            <Button
+                android:layout_width="115dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/registerBtn"
+                android:text="Register"
+                android:layout_marginLeft="5dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
