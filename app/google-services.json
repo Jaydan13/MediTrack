@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "127409361770",
+    "project_id": "meditrack-2918f",
+    "storage_bucket": "meditrack-2918f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:127409361770:android:0f40482ae287b790050b13",
+        "android_client_info": {
+          "package_name": "com.example.meditrack"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOCEo8nsDpM5dNf0Js7nZBoVxZJOoQ6Ls"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
