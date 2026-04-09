@@ -45,7 +45,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/goToRegisterBtn"
                 android:text="Register"
-                android:layout_marginRight="5dp"/>
+                android:layout_marginRight="5dp"
+                android:backgroundTint="#4F46E5"/>
 
             <!-- Login Button -->
             <Button
@@ -53,7 +54,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/loginBtn"
                 android:text="Login"
-                android:layout_marginLeft="5dp"/>
+                android:layout_marginLeft="5dp"
+                android:backgroundTint="#4F46E5"/>
 
         </LinearLayout>
 

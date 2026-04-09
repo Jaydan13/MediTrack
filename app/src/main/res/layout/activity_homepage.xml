@@ -117,7 +117,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:id="@+id/homeButton"
-                android:src="@drawable/ic_homepage"
+                android:src="@drawable/homepage"
                 android:contentDescription="Home "
                 android:background="@null"
                 android:scaleType="fitCenter"
@@ -137,7 +137,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:id="@+id/recordsButton"
-                android:src="@drawable/ic_records"
+                android:src="@drawable/records"
                 android:contentDescription="Records"
                 android:background="@null"
                 android:scaleType="fitCenter"
@@ -157,14 +157,14 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:id="@+id/inventoryButton"
-                android:src="@drawable/ic_inventory"
+                android:src="@drawable/inventory"
                 android:contentDescription="Inventory"
                 android:background="@null"
                 android:scaleType="fitCenter"
                 android:tint="#FFFFFF"/>
         </LinearLayout>
 
-        <!-- Settings -->
+        <!-- Profile -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -177,8 +177,8 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:id="@+id/settingsButton"
-                android:src="@drawable/ic_settings"
-                android:contentDescription="Settings"
+                android:src="@drawable/profile"
+                android:contentDescription="Profile"
                 android:background="@null"
                 android:scaleType="fitCenter"
                 android:tint="#FFFFFF"/>
