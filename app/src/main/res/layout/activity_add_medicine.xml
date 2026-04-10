@@ -92,6 +92,27 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/durationText"
+                    android:hint="Duration (number)"
+                    android:inputType="number"
+                    android:layout_margin="10dp"/>
+
+                <Spinner
+                    android:layout_width="125dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spinnerDuration"
+                    android:layout_margin="10dp"/>
+
+            </LinearLayout>
+
             <Button
                 android:layout_width="100dp"
                 android:layout_height="50dp"
