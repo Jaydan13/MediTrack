@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:background="#F5F7FA">
 
-    <!-- Top Dashboard Card -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="70dp"
@@ -19,45 +18,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Dashboard"
+            android:text="Profile"
             android:textColor="#FFFFFF"
             android:textSize="20sp"
             android:textStyle="bold"/>
 
-        <ImageButton
-            android:id="@+id/btnAddMedication"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@null"
-            android:src="@android:drawable/ic_input_add"
-            android:tint="#FFFFFF"
-            android:contentDescription="Add Medication"/>
     </LinearLayout>
 
-    <!-- Hover Text -->
-    <TextView
-        android:id="@+id/txtAddHint"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add Medication"
-        android:textColor="#555555"
-        android:textSize="12sp"
-        android:layout_gravity="end"
-        android:layout_marginEnd="32dp"
-        android:visibility="gone"/>
-
-    <!-- Date & Time -->
-    <TextView
-        android:id="@+id/txtDateTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Monday, 18 January 2026 • 16:30"
-        android:textSize="14sp"
-        android:textColor="#333333"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="12dp"/>
-
-    <!-- Medication Reminder List -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -66,37 +33,66 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:orientation="vertical">
 
-            <!-- Example Reminder Card -->
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:src="@drawable/profile"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Name: "
+                android:id="@+id/userName"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Gender: "
+                android:id="@+id/userGender"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#FFFFFF"
-                android:padding="16dp"
-                android:layout_marginBottom="12dp"
-                android:elevation="4dp"
-                android:orientation="vertical">
+                android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
-                    android:text="Paracetamol"
-                    android:textSize="16sp"
-                    android:textStyle="bold"/>
+                    android:text="Colour: "
+                    android:id="@+id/colourText"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <Button
+                    android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:text="Take at 08:00 AM"
-                    android:textColor="#555555"/>
+                    android:id="@+id/colourBtn"
+                    android:text="Change"/>
+
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:text="Language: "
+                    android:id="@+id/languageText"/>
+
+                <Button
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/languageBtn"
+                    android:text="Change"/>
+
+            </LinearLayout>
         </LinearLayout>
+
     </ScrollView>
 
-    <!-- Bottom Navigation Bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"

@@ -1,6 +1,7 @@
 package com.example.meditrack;
 
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -11,21 +12,30 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class Records extends AppCompatActivity {
+public class Profile extends AppCompatActivity {
 
-    ImageButton homeBtn, inventoryBtn, profileBtn, pdfBtn;
+    ImageButton homeBtn, recordsBtn, inventoryBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_records);
+        setContentView(R.layout.activity_profile);
 
         homeBtn = findViewById(R.id.homeBtn);
         homeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Records.this, HomePage.class);
+                Intent intent = new Intent(Profile.this, HomePage.class);
+                startActivity(intent);
+            }
+        });
+
+        recordsBtn = findViewById(R.id.recordsBtn);
+        recordsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Profile.this, Records.class);
                 startActivity(intent);
             }
         });
@@ -34,16 +44,7 @@ public class Records extends AppCompatActivity {
         inventoryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Records.this, Inventory.class);
-                startActivity(intent);
-            }
-        });
-
-        profileBtn = findViewById(R.id.profileBtn);
-        profileBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Records.this, Profile.class);
+                Intent intent = new Intent(Profile.this, Inventory.class);
                 startActivity(intent);
             }
         });
