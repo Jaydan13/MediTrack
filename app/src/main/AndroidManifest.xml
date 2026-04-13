@@ -34,7 +34,7 @@
             android:name=".AddMedicine"
             android:exported="false" />
         <activity
-            android:name=".Settings"
+            android:name=".Profile"
             android:exported="false" />
         <activity
             android:name=".HomePage"

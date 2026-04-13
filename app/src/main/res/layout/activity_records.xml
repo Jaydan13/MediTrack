@@ -3,19 +3,130 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:padding="24dp">
+    android:background="#F5F7FA">
 
     <LinearLayout
-        android:layout_width="300dp"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_margin="16dp"
+        android:background="#4F46E5"
+        android:padding="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Medication Records"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+
+        <ImageButton
+            android:id="@+id/pdfBtn"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/export_to_pdf"
+            android:tint="#FFFFFF"
+            android:background="@null"
+            android:contentDescription="Export to PDF"
+            android:scaleType="fitCenter"/>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="#4F46E5"
+        android:orientation="horizontal"
+        android:weightSum="4">
+
+        <!-- Home -->
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:text="Records">
-        </TextView>
+            android:layout_weight="1"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageButton
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:id="@+id/homeBtn"
+                android:src="@drawable/homepage"
+                android:contentDescription="Home "
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:tint="#FFFFFF"/>
+        </LinearLayout>
+
+        <!-- Records -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageButton
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:id="@+id/recordsBtn"
+                android:src="@drawable/records"
+                android:contentDescription="Records"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:tint="#FFFFFF"/>
+        </LinearLayout>
+
+        <!-- Inventory -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageButton
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:id="@+id/inventoryBtn"
+                android:src="@drawable/inventory"
+                android:contentDescription="Inventory"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:tint="#FFFFFF"/>
+        </LinearLayout>
+
+        <!-- Profile -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageButton
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:id="@+id/profileBtn"
+                android:src="@drawable/profile"
+                android:contentDescription="Profile"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:tint="#FFFFFF"/>
+        </LinearLayout>
 
     </LinearLayout>
 
