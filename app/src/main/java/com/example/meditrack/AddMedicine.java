@@ -12,19 +12,23 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AddMedicine extends AppCompatActivity {
 
-    EditText medicineNameText, dosageText, intervalText, durationText;
+    EditText medicationNameText, dosageText, intervalText, durationText;
     TextView selectedTime;
     Button timePicker, saveBtn;
     Spinner spinnerInterval, spinnerDuration;
-    int hour, minute;
-    DatabaseReference databaseReference;
+    FirebaseFirestore db;
+    FirebaseAuth mAuth;
+    String time = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +36,7 @@ public class AddMedicine extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_add_medicine);
 
-        medicineNameText = findViewById(R.id.medicationNameText);
+        medicationNameText = findViewById(R.id.medicationNameText);
         dosageText = findViewById(R.id.dosageText);
         intervalText = findViewById(R.id.intervalText);
         selectedTime = findViewById(R.id.selectedTime);
@@ -42,52 +46,68 @@ public class AddMedicine extends AppCompatActivity {
         saveBtn = findViewById(R.id.saveBtn);
         spinnerInterval = findViewById(R.id.spinnerInterval);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("medications");
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
 
-        String[] options = {"Hours", "Days"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(AddMedicine.this, android.R.layout.simple_spinner_dropdown_item, options);
-        spinnerInterval.setAdapter(adapter);
+        String[] intervalOptions = {"Hours", "Days", "Weeks"};
+        String[] durationOptions = {"Days", "Weeks", "Months"};
 
-        timePicker.setOnClickListener(view -> showTimePicker());
+        ArrayAdapter<String> intervalAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, intervalOptions);
+        intervalAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        saveBtn.setOnClickListener(view -> saveMedication());
+        ArrayAdapter<String> durationAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, durationOptions);
+        durationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spinnerInterval.setAdapter(intervalAdapter);
+        spinnerDuration.setAdapter(durationAdapter);
+
+        timePicker.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            int minute = calendar.get(Calendar.MINUTE);
+
+            TimePickerDialog picker = new TimePickerDialog(this, (view, hourOfDay, minute1) -> {
+                time = hourOfDay + ":" + minute1;
+                selectedTime.setText("Time: " + time);
+            }, hour, minute, true);
+
+            picker.show();
+        });
+
+        saveBtn.setOnClickListener(view -> saveMedicine());
 
     }
 
-    private void showTimePicker() {
-        Calendar calendar = Calendar.getInstance();
-
-        TimePickerDialog dialog = new TimePickerDialog(AddMedicine.this, (view, hourOfDay, minute) -> {
-            this.hour = hourOfDay;
-            this.minute = minute;
-            selectedTime.setText(String.format("%02d:%02d", hourOfDay, minute));
-        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
-        dialog.show();
-    }
-
-    private void saveMedication() {
-        String medname = medicineNameText.getText().toString().trim();
+    private void saveMedicine() {
+        String name = medicationNameText.getText().toString().trim();
         String dosage = dosageText.getText().toString().trim();
-        String interval = intervalText.getText().toString().trim();
+        String intervalNo = intervalText.getText().toString().trim();
         String intervalType = spinnerInterval.getSelectedItem().toString();
-        String duration = durationText.getText().toString().trim();
+        String durationNo = durationText.getText().toString().trim();
         String durationType = spinnerDuration.getSelectedItem().toString();
 
-        if (medname.isEmpty() || dosage.isEmpty() || interval.isEmpty() || duration.isEmpty()) {
+        if (name.isEmpty() || dosage.isEmpty() || intervalNo.isEmpty() || durationNo.isEmpty() || time.isEmpty()) {
             Toast.makeText(AddMedicine.this, "Fill all Fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String id = databaseReference.push().getKey();
+        String interval = intervalNo + " " + intervalType;
+        String duration = durationNo + " " + durationType;
 
-        Medication med = new Medication(
-                medname, dosage, hour, minute, Integer.parseInt(interval), intervalType, Integer.parseInt(duration), durationType
-        );
+        String userId = mAuth.getCurrentUser().getUid();
 
-        databaseReference.child(id).setValue(med).addOnSuccessListener(a -> {
-            Toast.makeText(AddMedicine.this, "Saved", Toast.LENGTH_SHORT).show();
+        Map<String, Object> medicine = new HashMap<>();
+        medicine.put("name", name);
+        medicine.put("dosage", dosage);
+        medicine.put("interval", interval);
+        medicine.put("duration", duration);
+        medicine.put("time", time);
 
-            AlarmHelper.setAlarm(this, med, id);
+        db.collection("users").document(userId).collection("medicines").add(medicine).addOnSuccessListener(doc -> {
+            Toast.makeText(this, "Medicine Saved!!!", Toast.LENGTH_SHORT).show();
+            finish();
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Error: " +e.getMessage(), Toast.LENGTH_LONG).show();
         });
     }
 }
