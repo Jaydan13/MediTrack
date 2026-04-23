@@ -47,14 +47,16 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/medicationNameText"
                 android:hint="Medicine Name"
-                android:layout_margin="10dp"/>
+                android:layout_margin="10dp"
+                android:background="@drawable/edittext_bg"/>
 
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/dosageText"
                 android:hint="Dosage"
-                android:layout_margin="10dp"/>
+                android:layout_margin="10dp"
+                android:background="@drawable/edittext_bg"/>
 
             <Button
                 android:layout_width="match_parent"
@@ -82,7 +84,8 @@
                     android:id="@+id/intervalText"
                     android:hint="Repeat every (number)"
                     android:inputType="number"
-                    android:layout_margin="10dp"/>
+                    android:layout_margin="10dp"
+                    android:background="@drawable/edittext_bg"/>
 
                 <Spinner
                     android:layout_width="125dp"
@@ -103,7 +106,8 @@
                     android:id="@+id/durationText"
                     android:hint="Duration (number)"
                     android:inputType="number"
-                    android:layout_margin="10dp"/>
+                    android:layout_margin="10dp"
+                    android:background="@drawable/edittext_bg"/>
 
                 <Spinner
                     android:layout_width="125dp"

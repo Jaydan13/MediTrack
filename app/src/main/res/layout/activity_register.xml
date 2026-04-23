@@ -6,6 +6,12 @@
     android:orientation="vertical"
     android:gravity="center">
 
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:src="@drawable/meditracklogo"
+        android:layout_marginBottom="50dp"/>
+
     <LinearLayout
         android:layout_width="300dp"
         android:layout_height="wrap_content"
@@ -20,7 +26,8 @@
             android:inputType="textEmailAddress"
             android:hint="Email"
             android:layout_marginBottom="10dp"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:background="@drawable/edittext_bg"/>
 
         <!-- Password Input -->
         <EditText
@@ -30,7 +37,8 @@
             android:inputType="textPassword"
             android:hint="Password"
             android:layout_marginBottom="10dp"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:background="@drawable/edittext_bg"/>
 
         <!-- Check Password -->
         <EditText
@@ -40,7 +48,8 @@
             android:inputType="textPassword"
             android:hint="Confirm Password"
             android:layout_marginBottom="10dp"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:background="@drawable/edittext_bg"/>
 
         <!-- Username Input -->
         <EditText
@@ -50,7 +59,8 @@
             android:inputType="text"
             android:hint="Username"
             android:layout_marginBottom="10dp"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:background="@drawable/edittext_bg"/>
 
         <LinearLayout
             android:layout_width="match_parent"

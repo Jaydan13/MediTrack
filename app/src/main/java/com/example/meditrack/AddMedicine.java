@@ -1,6 +1,9 @@
 package com.example.meditrack;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -28,6 +31,8 @@ public class AddMedicine extends AppCompatActivity {
     FirebaseFirestore db;
     FirebaseAuth mAuth;
     String time = "";
+    int selectedHour = 0;
+    int selectedMinute = 0;
 
 
     @Override
@@ -39,11 +44,14 @@ public class AddMedicine extends AppCompatActivity {
         medicationNameText = findViewById(R.id.medicationNameText);
         dosageText = findViewById(R.id.dosageText);
         intervalText = findViewById(R.id.intervalText);
-        selectedTime = findViewById(R.id.selectedTime);
         durationText = findViewById(R.id.durationText);
-        spinnerDuration = findViewById(R.id.spinnerDuration);
+
+        selectedTime = findViewById(R.id.selectedTime);
+
         timePicker = findViewById(R.id.timePicker);
         saveBtn = findViewById(R.id.saveBtn);
+
+        spinnerDuration = findViewById(R.id.spinnerDuration);
         spinnerInterval = findViewById(R.id.spinnerInterval);
 
         db = FirebaseFirestore.getInstance();
@@ -62,19 +70,29 @@ public class AddMedicine extends AppCompatActivity {
         spinnerDuration.setAdapter(durationAdapter);
 
         timePicker.setOnClickListener(v -> {
-            Calendar calendar = Calendar.getInstance();
-            int hour = calendar.get(Calendar.HOUR_OF_DAY);
-            int minute = calendar.get(Calendar.MINUTE);
 
-            TimePickerDialog picker = new TimePickerDialog(this, (view, hourOfDay, minute1) -> {
-                time = hourOfDay + ":" + minute1;
-                selectedTime.setText("Time: " + time);
-            }, hour, minute, true);
+            TimePickerDialog timePickerDialog = new TimePickerDialog(
+                    this,
+                    (view, hourOfDay, minute) -> {
 
-            picker.show();
+                        time = String.format("%02d:%02d", hourOfDay, minute);
+                        selectedTime.setText(time);
+
+                        // Save for alarm use
+                        selectedHour = hourOfDay;
+                        selectedMinute = minute;
+
+                    },
+                    12, 0, true
+            );
+
+            timePickerDialog.show();
         });
 
-        saveBtn.setOnClickListener(view -> saveMedicine());
+        saveBtn.setOnClickListener(view -> {
+            setAlarm();
+            saveMedicine();
+        });
 
     }
 
@@ -94,6 +112,11 @@ public class AddMedicine extends AppCompatActivity {
         String interval = intervalNo + " " + intervalType;
         String duration = durationNo + " " + durationType;
 
+        if (mAuth.getCurrentUser() == null) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String userId = mAuth.getCurrentUser().getUid();
 
         Map<String, Object> medicine = new HashMap<>();
@@ -109,5 +132,45 @@ public class AddMedicine extends AppCompatActivity {
         }).addOnFailureListener(e -> {
             Toast.makeText(this, "Error: " +e.getMessage(), Toast.LENGTH_LONG).show();
         });
+    }
+
+    private void setAlarm() {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, selectedHour);
+        calendar.set(Calendar.MINUTE, selectedMinute);
+        calendar.set(Calendar.SECOND, 0);
+
+        if (calendar.before(Calendar.getInstance())) {
+            calendar.add(Calendar.DATE, 1);
+        }
+
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        intent.putExtra("name", medicationNameText.getText().toString());
+        intent.putExtra("dosage", dosageText.getText().toString());
+        intent.putExtra("intervalNo", intervalNo);
+        intent.putExtra("intervalType", intervalType);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                this,
+                (int) System.currentTimeMillis(),
+                intent,
+                PendingIntent.FLAG_IMMUTABLE
+        );
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            if (!alarmManager.canScheduleExactAlarms()) {
+                startActivity(new Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM));
+                return;
+            }
+        }
+
+        alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                calendar.getTimeInMillis(),
+                pendingIntent
+        );
     }
 }

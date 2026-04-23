@@ -29,8 +29,10 @@ public class Login extends AppCompatActivity {
 
         emailText = findViewById(R.id.emailText);
         passwordText = findViewById(R.id.passwordText);
+
         loginBtn = findViewById(R.id.loginBtn);
         gotoRegisterBtn = findViewById(R.id.goToRegisterBtn);
+
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
@@ -60,20 +62,27 @@ public class Login extends AppCompatActivity {
 
             if (task.isSuccessful()) {
 
+                if (mAuth.getCurrentUser() == null) {
+                    Toast.makeText(this, "User not found", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 String userId = mAuth.getCurrentUser().getUid();
 
-                db.collection("users").document(userId).get().addOnSuccessListener(documentSnapshot -> {
+                db.collection("users").document(userId).get()
+                        .addOnSuccessListener(documentSnapshot -> {
 
-                    if (documentSnapshot.exists()) {
-                        String username = documentSnapshot.getString("username");
+                            if (documentSnapshot.exists()) {
+                                String username = documentSnapshot.getString("username");
 
-                        Toast.makeText(this, "Welcome "+ username, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, "Welcome " + username, Toast.LENGTH_SHORT).show();
 
-                        Intent intent = new Intent(Login.this, HomePage.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                });
+                                startActivity(new Intent(Login.this, HomePage.class));
+                                finish();
+                            } else {
+                                Toast.makeText(this, "User data not found", Toast.LENGTH_SHORT).show();
+                            }
+                        });
             } else {
                 Toast.makeText(this, "Login Failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
             }

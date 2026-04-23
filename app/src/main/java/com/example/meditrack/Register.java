@@ -38,8 +38,10 @@ public class Register extends AppCompatActivity {
         newPass = findViewById(R.id.newPass);
         checkNewPass = findViewById(R.id.checkNewPass);
         username = findViewById(R.id.username);
+
         registerBtn = findViewById(R.id.registerBtn);
         loginReturnBtn = findViewById(R.id.loginReturnBtn);
+
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
@@ -81,23 +83,29 @@ public class Register extends AppCompatActivity {
 
             if (task.isSuccessful()) {
 
+                if (mAuth.getCurrentUser() == null) {
+                    Toast.makeText(this, "User creation failed", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 String userId = mAuth.getCurrentUser().getUid();
 
                 Map<String, Object> userMap = new HashMap<>();
                 userMap.put("username", user);
                 userMap.put("email", email);
 
-                db.collection("users").document(userId).set(userMap).addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Account Created Successfully", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(Register.this, Login.class);
-                    startActivity(intent);
-                    finish();
-                }).addOnFailureListener(e -> {
-                    Toast.makeText(this, "Failed to save profile: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                });
+                db.collection("users").document(userId).set(userMap)
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(this, "Account Created Successfully", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(Register.this, Login.class));
+                            finish();
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(this, "Failed to save profile: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        });
 
             } else {
-                Toast.makeText(this, "Registration Failed: " + task.getException(), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Registration Failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }

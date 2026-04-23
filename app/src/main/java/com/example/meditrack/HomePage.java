@@ -13,8 +13,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import org.w3c.dom.Text;
-
 public class HomePage extends AppCompatActivity {
 
     ImageButton addMedication, recordsBtn, inventoryBtn, profileBtn;
@@ -28,8 +26,6 @@ public class HomePage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
 
-        hintText = findViewById(R.id.txtAddHint);
-
         recordsBtn = findViewById(R.id.recordsBtn);
         inventoryBtn = findViewById(R.id.inventoryBtn);
         profileBtn = findViewById(R.id.profileBtn);
@@ -42,15 +38,6 @@ public class HomePage extends AppCompatActivity {
 
         loadMedicines();
 
-        addMedication.setOnHoverListener((v, event) -> {
-            hintText.setVisibility(View.VISIBLE);
-            return false;
-        });
-
-        addMedication.setOnFocusChangeListener((v, hasFocus) -> {
-            hintText.setVisibility(hasFocus ? View.VISIBLE : View.GONE);
-        });
-
         addMedication.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -58,7 +45,6 @@ public class HomePage extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
 
         recordsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +54,6 @@ public class HomePage extends AppCompatActivity {
             }
         });
 
-
         inventoryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -76,7 +61,6 @@ public class HomePage extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
 
         profileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,32 +74,59 @@ public class HomePage extends AppCompatActivity {
 
     private void loadMedicines() {
 
+        if (mAuth.getCurrentUser() == null) {
+            startActivity(new Intent(HomePage.this, Login.class));
+            finish();
+            return;
+        }
+
         String userId = mAuth.getCurrentUser().getUid();
 
-        db.collection("users").document(userId).collection("medicines").get().addOnSuccessListener(queryDocumentSnapshots -> {
-            medicinesContainer.removeAllViews();
+        db.collection("users")
+                .document(userId)
+                .collection("medicines")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
 
-            for (QueryDocumentSnapshot doc: queryDocumentSnapshots) {
-                String name = doc.getString("name");
-                String time = doc.getString("time");
+                    medicinesContainer.removeAllViews();
 
-                addMedicineCard(name, time);
-            }
-        });
+                    if (queryDocumentSnapshots.isEmpty()) {
+                        TextView empty = new TextView(this);
+                        empty.setText("No medicines added yet");
+                        medicinesContainer.addView(empty);
+                        return;
+                    }
+
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        String name = doc.getString("name");
+                        String time = doc.getString("time");
+
+                        addMedicineCard(name, time);
+                    }
+                });
     }
-
     private void addMedicineCard(String name, String time) {
 
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
         card.setPadding(30, 30, 30, 30);
+        card.setBackgroundColor(0xFFEFEFEF);
+        card.setElevation(8);
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(0, 0, 0, 30);
+        card.setLayoutParams(params);
 
         TextView medName = new TextView(this);
-        medName.setText(name);
+        medName.setText(name != null ? name : "Unknown Medicine");
         medName.setTextSize(18);
+        medName.setPadding(0, 0, 0, 10);
 
         TextView medTime = new TextView(this);
-        medTime.setText("Time: "+ time);
+        medTime.setText("Time: " + (time != null ? time : "Not set"));
 
         card.addView(medName);
         card.addView(medTime);

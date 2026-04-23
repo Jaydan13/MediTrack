@@ -19,7 +19,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Dashboard"
+            android:text="Home"
             android:textColor="#FFFFFF"
             android:textSize="20sp"
             android:textStyle="bold"/>
@@ -33,18 +33,6 @@
             android:tint="#FFFFFF"
             android:contentDescription="Add Medication"/>
     </LinearLayout>
-
-    <!-- Hover Text -->
-    <TextView
-        android:id="@+id/txtAddHint"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add Medication"
-        android:textColor="#555555"
-        android:textSize="12sp"
-        android:layout_gravity="end"
-        android:layout_marginEnd="32dp"
-        android:visibility="gone"/>
 
     <!-- Date & Time -->
     <TextView
@@ -70,31 +58,9 @@
             android:id="@+id/medicinesContainer"
             android:padding="16dp">
 
-            <!-- Example Reminder Card -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#FFFFFF"
-                android:padding="16dp"
-                android:layout_marginBottom="12dp"
-                android:elevation="4dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Paracetamol"
-                    android:textSize="16sp"
-                    android:textStyle="bold"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Take at 08:00 AM"
-                    android:textColor="#555555"/>
-            </LinearLayout>
 
         </LinearLayout>
+
     </ScrollView>
 
     <!-- Bottom Navigation Bar -->
