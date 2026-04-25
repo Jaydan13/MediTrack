@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Query;
 
 public class Records extends AppCompatActivity {
 
@@ -74,7 +75,7 @@ public class Records extends AppCompatActivity {
 
         String userId = mAuth.getCurrentUser().getUid();
 
-        db.collection("users").document(userId).collection("records").get().addOnSuccessListener(queryDocumentSnapshots -> {
+        db.collection("users").document(userId).collection("records").orderBy("timestamp", Query.Direction.DESCENDING).get().addOnSuccessListener(queryDocumentSnapshots -> {
             recordsContainer.removeAllViews();
 
             if (queryDocumentSnapshots.isEmpty()) {
@@ -91,43 +92,20 @@ public class Records extends AppCompatActivity {
                 String date = doc.getString("date");
                 String time = doc.getString("time");
 
-                addRecordsView(name, dosage, date, time);
+                View recordView = getLayoutInflater().inflate(R.layout.record, null);
+
+                TextView nameText = recordView.findViewById(R.id.recordMedName);
+                TextView dosageText = recordView.findViewById(R.id.recordDosage);
+                TextView dateText = recordView.findViewById(R.id.recordDate);
+                TextView timeText = recordView.findViewById(R.id.recordTime);
+
+                nameText.setText(name);
+                dosageText.setText(dosage);
+                dateText.setText(date);
+                timeText.setText(time);
+
+                recordsContainer.addView(recordView, 0);
             }
         });
-    }
-    private void addRecordsView(String name, String dosage, String date, String time) {
-
-        LinearLayout recordLayout = new LinearLayout(this);
-        recordLayout.setOrientation(LinearLayout.VERTICAL);
-        recordLayout.setPadding(30, 30, 30, 30);
-        recordLayout.setBackgroundColor(0xFFEFEFEF);
-
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-        params.setMargins(0, 0, 0, 30);
-        recordLayout.setLayoutParams(params);
-
-        TextView nameText = new TextView(this);
-        nameText.setText("Medicine: " + (name != null ? name : "Unknown"));
-        nameText.setTextSize(16);
-
-        TextView dosageText = new TextView(this);
-        dosageText.setText("Dosage: " + (dosage != null ? dosage : "N/A"));
-
-        TextView dateText = new TextView(this);
-        dateText.setText("Date: " + (date != null ? date : "N/A"));
-
-        TextView timeText = new TextView(this);
-        timeText.setText("Time: " + (time != null ? time : "N/A"));
-
-        recordLayout.addView(nameText);
-        recordLayout.addView(dosageText);
-        recordLayout.addView(dateText);
-        recordLayout.addView(timeText);
-
-        // Add to TOP (newest first)
-        recordsContainer.addView(recordLayout, 0);
     }
 }

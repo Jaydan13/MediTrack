@@ -39,7 +39,24 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/stockContainer"
+            android:padding="16dp">
+
+
+        </LinearLayout>
+
     </ScrollView>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/addStockBtn"
+        android:text="Add Stock to Inventory"
+        android:backgroundTint="#4F46E5"/>
 
     <LinearLayout
         android:layout_width="match_parent"

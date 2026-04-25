@@ -43,8 +43,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .addAction(android.R.drawable.ic_menu_save, "Taken", takenPendingIntent);
 
-        NotificationManagerCompat.from(context)
-                .notify((int) System.currentTimeMillis(), builder.build());
+        NotificationManagerCompat.from(context).notify((int) System.currentTimeMillis(), builder.build());
 
         // ---------------- REPEAT LOGIC ----------------
         Calendar calendar = Calendar.getInstance();

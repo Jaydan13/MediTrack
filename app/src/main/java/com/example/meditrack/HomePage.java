@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -82,55 +83,34 @@ public class HomePage extends AppCompatActivity {
 
         String userId = mAuth.getCurrentUser().getUid();
 
-        db.collection("users")
-                .document(userId)
-                .collection("medicines")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
+        db.collection("users").document(userId).collection("medicines").get().addOnSuccessListener(queryDocumentSnapshots -> {
 
-                    medicinesContainer.removeAllViews();
+            medicinesContainer.removeAllViews();
 
-                    if (queryDocumentSnapshots.isEmpty()) {
-                        TextView empty = new TextView(this);
-                        empty.setText("No medicines added yet");
-                        medicinesContainer.addView(empty);
-                        return;
-                    }
+            if (queryDocumentSnapshots.isEmpty()) {
+                TextView empty = new TextView(this);
+                empty.setText("No reminders added yet");
+                medicinesContainer.addView(empty);
+                return;
+            }
 
-                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        String name = doc.getString("name");
-                        String time = doc.getString("time");
+            for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                String name = doc.getString("name");
+                String dosage = doc.getString("dosage");
+                String time = doc.getString("time");
 
-                        addMedicineCard(name, time);
-                    }
-                });
-    }
-    private void addMedicineCard(String name, String time) {
+                View reminderView = getLayoutInflater().inflate(R.layout.remind_medicine, null);
 
-        LinearLayout card = new LinearLayout(this);
-        card.setOrientation(LinearLayout.VERTICAL);
-        card.setPadding(30, 30, 30, 30);
-        card.setBackgroundColor(0xFFEFEFEF);
-        card.setElevation(8);
+                TextView nameText = reminderView.findViewById(R.id.remindMedName);
+                TextView dosageText = reminderView.findViewById(R.id.remindDosage);
+                TextView timeText = reminderView.findViewById(R.id.remindTime);
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-        params.setMargins(0, 0, 0, 30);
-        card.setLayoutParams(params);
+                nameText.setText(name);
+                dosageText.setText("Dosage: " + dosage);
+                timeText.setText("Time: " + time);
 
-        TextView medName = new TextView(this);
-        medName.setText(name != null ? name : "Unknown Medicine");
-        medName.setTextSize(18);
-        medName.setPadding(0, 0, 0, 10);
-
-        TextView medTime = new TextView(this);
-        medTime.setText("Time: " + (time != null ? time : "Not set"));
-
-        card.addView(medName);
-        card.addView(medTime);
-
-        medicinesContainer.addView(card);
+                medicinesContainer.addView(reminderView);
+            }
+        });
     }
 }
