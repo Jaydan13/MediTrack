@@ -1,11 +1,40 @@
 package com.example.meditrack;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
 public class EditReminder extends AppCompatActivity {
+
+    EditText editMedName, editDosage, editInterval, editDuration;
+    Spinner editSpinnerInterval, editSpinnerDuration;
+    Button timePicker, saveBtn;
+    ImageButton backBtn;
+    FirebaseAuth mAuth;
+    FirebaseFirestore db;
+    String id;
+    String choose_time = "";
+    int selectedHour = 0;
+    int selectedMinute = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -13,5 +42,186 @@ public class EditReminder extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_edit_reminder);
 
+        editMedName = findViewById(R.id.editMedName);
+        editDosage = findViewById(R.id.editDosage);
+        editInterval = findViewById(R.id.editInterval);
+        editDuration = findViewById(R.id.editDuration);
+
+        editSpinnerInterval = findViewById(R.id.editSpinnerInterval);
+        editSpinnerDuration = findViewById(R.id.editSpinnerDuration);
+
+        timePicker = findViewById(R.id.timePicker);
+        saveBtn = findViewById(R.id.saveBtn);
+        backBtn = findViewById(R.id.backBtn);
+
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
+        id = getIntent().getStringExtra("id");
+        String name = getIntent().getStringExtra("name");
+        String dosage = getIntent().getStringExtra("dosage");
+        String time = getIntent().getStringExtra("time");
+        String interval = getIntent().getStringExtra("interval");
+        String duration = getIntent().getStringExtra("duration");
+
+        String[] intervalOptions = {"Hours", "Days", "Weeks"};
+        String[] durationOptions = {"Days", "Weeks", "Months"};
+
+        ArrayAdapter<String> intervalAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, intervalOptions);
+        intervalAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        ArrayAdapter<String> durationAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, durationOptions);
+        durationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        editSpinnerInterval.setAdapter(intervalAdapter);
+        editSpinnerDuration.setAdapter(durationAdapter);
+
+        editMedName.setText(name);
+        editDosage.setText(dosage);
+        String[] intervalSplit = interval.split(" ");
+        editInterval.setText(intervalSplit[0]);
+        setSpinner(editSpinnerInterval, intervalSplit[1]);
+        String[] durationSplit = duration.split(" ");
+        editDuration.setText(durationSplit[0]);
+        setSpinner(editSpinnerDuration, durationSplit[1]);
+        choose_time = time;
+        timePicker.setText(time);
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(EditReminder.this, HomePage.class);
+                startActivity(intent);
+            }
+        });
+
+        timePicker.setOnClickListener(v -> {
+
+            TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
+
+                choose_time = String.format("%02d:%02d", hourOfDay, minute);
+                timePicker.setText(choose_time);
+
+                // Save for alarm use
+                selectedHour = hourOfDay;
+                selectedMinute = minute;
+
+                }, 12, 0, true);
+
+            timePickerDialog.show();
+        });
+
+        saveBtn.setOnClickListener(view -> {
+            updateReminder();
+            cancelAlarm();
+            setUpdatedAlarm();
+        });
+    }
+    private void updateReminder() {
+        String name = editMedName.getText().toString().trim();
+        String dosage = editDosage.getText().toString().trim();
+        String intervalNo = editInterval.getText().toString().trim();
+        String intervalType = editSpinnerInterval.getSelectedItem().toString().trim();
+        String durationNo = editDuration.getText().toString().trim();
+        String durationType = editSpinnerDuration.getSelectedItem().toString().trim();
+
+        if (name.isEmpty() || dosage.isEmpty() || intervalNo.isEmpty() || durationNo.isEmpty() || choose_time.isEmpty()) {
+            Toast.makeText(EditReminder.this, "Fill all Fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String interval = intervalNo + " " + intervalType;
+        String duration = durationNo + " " + durationType;
+
+        if (mAuth.getCurrentUser() == null) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userId = mAuth.getCurrentUser().getUid();
+
+        Map<String, Object> updatedReminder = new HashMap<>();
+        updatedReminder.put("name", name);
+        updatedReminder.put("dosage", dosage);
+        updatedReminder.put("time", choose_time);
+        updatedReminder.put("interval", interval);
+        updatedReminder.put("duration", duration);
+
+        db.collection("users").document(userId).collection("reminder").document(id).update(updatedReminder).addOnSuccessListener(unused -> {
+            Toast.makeText(this, "Reminder Updated", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(EditReminder.this, HomePage.class);
+            startActivity(intent);
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
+    }
+    private void cancelAlarm() {
+
+        Intent intent = new Intent(this, AlarmReceiver.class);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                this, id.hashCode(), intent, PendingIntent.FLAG_IMMUTABLE
+        );
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        if (alarmManager != null) {
+            alarmManager.cancel(pendingIntent);
+        }
+    }
+    private void setUpdatedAlarm() {
+
+        // If user didn’t change time, use existing button text
+        if (choose_time.isEmpty()) {
+            choose_time = timePicker.getText().toString();
+        }
+
+        String[] timeSplit = choose_time.split(":");
+        int hour = Integer.parseInt(timeSplit[0]);
+        int minute = Integer.parseInt(timeSplit[1]);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+
+        if (calendar.before(Calendar.getInstance())) {
+            calendar.add(Calendar.DATE, 1);
+        }
+
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        intent.putExtra("name", editMedName.getText().toString());
+        intent.putExtra("dosage", editDosage.getText().toString());
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                this,
+                id.hashCode(), // MUST match cancelAlarm
+                intent,
+                PendingIntent.FLAG_IMMUTABLE
+        );
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            if (!alarmManager.canScheduleExactAlarms()) {
+                startActivity(new Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM));
+                return;
+            }
+        }
+
+        if (alarmManager != null) {
+            alarmManager.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    calendar.getTimeInMillis(),
+                    pendingIntent
+            );
+        }
+    }
+    private void setSpinner(Spinner spinner, String value) {
+        ArrayAdapter adapter = (ArrayAdapter) spinner.getAdapter();
+        int position = adapter.getPosition(value);
+        if (position >= 0) {
+            spinner.setSelection(position);
+        }
     }
 }

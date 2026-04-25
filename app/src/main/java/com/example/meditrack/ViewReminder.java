@@ -78,7 +78,7 @@ public class ViewReminder extends AppCompatActivity {
 
             String userId = mAuth.getCurrentUser().getUid();
 
-            db.collection("users").document(userId).collection("medicines").document(id).delete().addOnSuccessListener(unused -> {
+            db.collection("users").document(userId).collection("reminder").document(id).delete().addOnSuccessListener(unused -> {
                 Toast.makeText(this, "Deleted", Toast.LENGTH_SHORT).show();
                 finish(); // go back to HomePage
             });

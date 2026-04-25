@@ -97,7 +97,7 @@ public class HomePage extends AppCompatActivity {
 
         String userId = mAuth.getCurrentUser().getUid();
 
-        db.collection("users").document(userId).collection("medicines").get().addOnSuccessListener(queryDocumentSnapshots -> {
+        db.collection("users").document(userId).collection("reminder").get().addOnSuccessListener(queryDocumentSnapshots -> {
 
             remindList.clear();
 

@@ -90,7 +90,7 @@ public class AddStock extends AppCompatActivity {
         Map<String, Object> stock = new HashMap<>();
         stock.put("name", name);
         stock.put("quantity", quantity);
-        stock.put("expiry", selectedExpiry);
+        stock.put("expDate", selectedExpiry);
 
         db.collection("users").document(userId).collection("inventory").add(stock).addOnSuccessListener(doc -> {
             Toast.makeText(this, "Stock Added", Toast.LENGTH_SHORT).show();

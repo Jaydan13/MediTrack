@@ -27,13 +27,12 @@ import java.util.Map;
 public class AddReminder extends AppCompatActivity {
 
     EditText medicationNameText, dosageText, intervalText, durationText;
-    TextView selectedTime;
     Button timePicker, saveBtn;
     ImageButton backBtn;
     Spinner spinnerInterval, spinnerDuration;
     FirebaseFirestore db;
     FirebaseAuth mAuth;
-    String time = "";
+    String choose_time = "";
     int selectedHour = 0;
     int selectedMinute = 0;
 
@@ -49,10 +48,9 @@ public class AddReminder extends AppCompatActivity {
         intervalText = findViewById(R.id.intervalText);
         durationText = findViewById(R.id.durationText);
 
-        selectedTime = findViewById(R.id.selectedTime);
-
         timePicker = findViewById(R.id.timePicker);
         saveBtn = findViewById(R.id.saveBtn);
+        backBtn = findViewById(R.id.backBtn);
 
         spinnerDuration = findViewById(R.id.spinnerDuration);
         spinnerInterval = findViewById(R.id.spinnerInterval);
@@ -82,32 +80,28 @@ public class AddReminder extends AppCompatActivity {
 
         timePicker.setOnClickListener(v -> {
 
-            TimePickerDialog timePickerDialog = new TimePickerDialog(
-                    this,
-                    (view, hourOfDay, minute) -> {
+            TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
 
-                        time = String.format("%02d:%02d", hourOfDay, minute);
-                        selectedTime.setText(time);
+                choose_time = String.format("%02d:%02d", hourOfDay, minute);
+                timePicker.setText(choose_time);
 
-                        // Save for alarm use
-                        selectedHour = hourOfDay;
-                        selectedMinute = minute;
+                // Save for alarm use
+                selectedHour = hourOfDay;
+                selectedMinute = minute;
 
-                    },
-                    12, 0, true
-            );
+                }, 12, 0, true);
 
             timePickerDialog.show();
         });
 
         saveBtn.setOnClickListener(view -> {
             setAlarm();
-            saveMedicine();
+            saveReminder();
         });
 
     }
 
-    private void saveMedicine() {
+    private void saveReminder() {
         String name = medicationNameText.getText().toString().trim();
         String dosage = dosageText.getText().toString().trim();
         String intervalNo = intervalText.getText().toString().trim();
@@ -115,7 +109,7 @@ public class AddReminder extends AppCompatActivity {
         String durationNo = durationText.getText().toString().trim();
         String durationType = spinnerDuration.getSelectedItem().toString();
 
-        if (name.isEmpty() || dosage.isEmpty() || intervalNo.isEmpty() || durationNo.isEmpty() || time.isEmpty()) {
+        if (name.isEmpty() || dosage.isEmpty() || intervalNo.isEmpty() || durationNo.isEmpty() || choose_time.isEmpty()) {
             Toast.makeText(AddReminder.this, "Fill all Fields", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -130,15 +124,15 @@ public class AddReminder extends AppCompatActivity {
 
         String userId = mAuth.getCurrentUser().getUid();
 
-        Map<String, Object> medicine = new HashMap<>();
-        medicine.put("name", name);
-        medicine.put("dosage", dosage);
-        medicine.put("interval", interval);
-        medicine.put("duration", duration);
-        medicine.put("time", time);
+        Map<String, Object> reminder = new HashMap<>();
+        reminder.put("name", name);
+        reminder.put("dosage", dosage);
+        reminder.put("interval", interval);
+        reminder.put("duration", duration);
+        reminder.put("time", choose_time);
 
-        db.collection("users").document(userId).collection("medicines").add(medicine).addOnSuccessListener(doc -> {
-            Toast.makeText(this, "Medicine Saved!!!", Toast.LENGTH_SHORT).show();
+        db.collection("users").document(userId).collection("reminder").add(reminder).addOnSuccessListener(doc -> {
+            Toast.makeText(this, "Reminder Saved!!!", Toast.LENGTH_SHORT).show();
             finish();
         }).addOnFailureListener(e -> {
             Toast.makeText(this, "Error: " +e.getMessage(), Toast.LENGTH_LONG).show();
@@ -160,7 +154,9 @@ public class AddReminder extends AppCompatActivity {
         intent.putExtra("name", medicationNameText.getText().toString());
         intent.putExtra("dosage", dosageText.getText().toString());
         intent.putExtra("intervalNo", intervalText.getText().toString());
-        //intent.putExtra("intervalType", spinnerInterval.getTe);
+        intent.putExtra("intervalType", spinnerInterval.getSelectedItem().toString());
+        intent.putExtra("durationNo", durationText.getText().toString());
+        intent.putExtra("durationType", spinnerDuration.getSelectedItem().toString());
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 this,

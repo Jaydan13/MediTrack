@@ -1,10 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".EditReminder">
+    android:layout_height="match_parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_margin="16dp"
+        android:background="#4F46E5"
+        android:padding="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/back"
+            android:id="@+id/backBtn"
+            android:tint="#FFFFFF"
+            android:background="@null"
+            android:contentDescription="Back"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Edit Reminder"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/editMedName"
+                android:hint="Medicine Name"
+                android:layout_margin="10dp"
+                android:background="@drawable/edittext_bg"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/editDosage"
+                android:hint="Dosage"
+                android:layout_margin="10dp"
+                android:background="@drawable/edittext_bg"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/timePicker"
+                android:text="Select Time"
+                android:layout_margin="10dp"
+                android:backgroundTint="#4F46E5"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/editInterval"
+                    android:hint="Repeat every (number)"
+                    android:inputType="number"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/edittext_bg"/>
+
+                <Spinner
+                    android:layout_width="125dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/editSpinnerInterval"
+                    android:layout_margin="10dp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/editDuration"
+                    android:hint="Duration (number)"
+                    android:inputType="number"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/edittext_bg"/>
+
+                <Spinner
+                    android:layout_width="125dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/editSpinnerDuration"
+                    android:layout_margin="10dp"/>
+
+            </LinearLayout>
+
+            <Button
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:id="@+id/saveBtn"
+                android:text="Save"
+                android:layout_margin="10dp"
+                android:layout_gravity="center"
+                android:backgroundTint="#4F46E5"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
