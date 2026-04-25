@@ -4,21 +4,26 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Records extends AppCompatActivity {
 
     ImageButton homeBtn, inventoryBtn, profileBtn, pdfBtn;
-    LinearLayout recordsContainer;
+    RecyclerView recyclerView;
+    RecordsAdapter adapter;
+    List<RecordItem> recordList;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
 
@@ -33,10 +38,15 @@ public class Records extends AppCompatActivity {
         profileBtn = findViewById(R.id.profileBtn);
         pdfBtn = findViewById(R.id.pdfBtn);
 
-        recordsContainer = findViewById(R.id.recordsContainer);
+        recyclerView = findViewById(R.id.recyclerViewRecords);
+        recordList = new ArrayList<>();
+        adapter = new RecordsAdapter(recordList);
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
 
         loadRecords();
 
@@ -63,9 +73,14 @@ public class Records extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadRecords(); // refresh list
+    }
+
     private void loadRecords() {
         if (mAuth.getCurrentUser() == null) {
             startActivity(new Intent(Records.this, Login.class));
@@ -76,14 +91,8 @@ public class Records extends AppCompatActivity {
         String userId = mAuth.getCurrentUser().getUid();
 
         db.collection("users").document(userId).collection("records").orderBy("timestamp", Query.Direction.DESCENDING).get().addOnSuccessListener(queryDocumentSnapshots -> {
-            recordsContainer.removeAllViews();
 
-            if (queryDocumentSnapshots.isEmpty()) {
-                TextView empty = new TextView(this);
-                empty.setText("No records yet");
-                recordsContainer.addView(empty);
-                return;
-            }
+            recordList.clear();
 
             for (DocumentSnapshot doc: queryDocumentSnapshots) {
 
@@ -92,20 +101,9 @@ public class Records extends AppCompatActivity {
                 String date = doc.getString("date");
                 String time = doc.getString("time");
 
-                View recordView = getLayoutInflater().inflate(R.layout.record, null);
-
-                TextView nameText = recordView.findViewById(R.id.recordMedName);
-                TextView dosageText = recordView.findViewById(R.id.recordDosage);
-                TextView dateText = recordView.findViewById(R.id.recordDate);
-                TextView timeText = recordView.findViewById(R.id.recordTime);
-
-                nameText.setText(name);
-                dosageText.setText(dosage);
-                dateText.setText(date);
-                timeText.setText(time);
-
-                recordsContainer.addView(recordView, 0);
+                recordList.add(new RecordItem(name, dosage, date, time));
             }
+            adapter.notifyDataSetChanged();
         });
     }
 }

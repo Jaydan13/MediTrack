@@ -25,10 +25,10 @@
             android:name=".AddStock"
             android:exported="false" />
         <activity
-            android:name=".EditMedicine"
+            android:name=".EditReminder"
             android:exported="false" />
         <activity
-            android:name=".ViewMedicine"
+            android:name=".ViewReminder"
             android:exported="false" />
         <activity
             android:name=".Register"
@@ -49,7 +49,7 @@
             android:name=".Inventory"
             android:exported="false" />
         <activity
-            android:name=".AddMedicine"
+            android:name=".AddReminder"
             android:exported="false" />
         <activity
             android:name=".Profile"

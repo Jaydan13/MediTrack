@@ -64,6 +64,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/stockQuantity"
                 android:hint="Quantity"
+                android:inputType="number"
                 android:background="@drawable/edittext_bg"
                 android:layout_margin="10dp"/>
 

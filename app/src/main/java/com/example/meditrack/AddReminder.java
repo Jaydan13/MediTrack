@@ -5,9 +5,11 @@ import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,11 +24,12 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AddMedicine extends AppCompatActivity {
+public class AddReminder extends AppCompatActivity {
 
     EditText medicationNameText, dosageText, intervalText, durationText;
     TextView selectedTime;
     Button timePicker, saveBtn;
+    ImageButton backBtn;
     Spinner spinnerInterval, spinnerDuration;
     FirebaseFirestore db;
     FirebaseAuth mAuth;
@@ -39,7 +42,7 @@ public class AddMedicine extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_add_medicine);
+        setContentView(R.layout.activity_add_reminder);
 
         medicationNameText = findViewById(R.id.medicationNameText);
         dosageText = findViewById(R.id.dosageText);
@@ -68,6 +71,14 @@ public class AddMedicine extends AppCompatActivity {
 
         spinnerInterval.setAdapter(intervalAdapter);
         spinnerDuration.setAdapter(durationAdapter);
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(AddReminder.this, HomePage.class);
+                startActivity(intent);
+            }
+        });
 
         timePicker.setOnClickListener(v -> {
 
@@ -105,7 +116,7 @@ public class AddMedicine extends AppCompatActivity {
         String durationType = spinnerDuration.getSelectedItem().toString();
 
         if (name.isEmpty() || dosage.isEmpty() || intervalNo.isEmpty() || durationNo.isEmpty() || time.isEmpty()) {
-            Toast.makeText(AddMedicine.this, "Fill all Fields", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AddReminder.this, "Fill all Fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -148,8 +159,8 @@ public class AddMedicine extends AppCompatActivity {
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.putExtra("name", medicationNameText.getText().toString());
         intent.putExtra("dosage", dosageText.getText().toString());
-        intent.putExtra("intervalNo", intervalNo);
-        intent.putExtra("intervalType", intervalType);
+        intent.putExtra("intervalNo", intervalText.getText().toString());
+        //intent.putExtra("intervalType", spinnerInterval.getTe);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 this,

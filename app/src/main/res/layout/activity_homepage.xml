@@ -25,7 +25,7 @@
             android:textStyle="bold"/>
 
         <ImageButton
-            android:id="@+id/btnAddMedication"
+            android:id="@+id/btnAddReminder"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="@null"
@@ -46,22 +46,14 @@
         android:layout_marginBottom="12dp"/>
 
     <!-- Medication Reminder List -->
-    <ScrollView
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:id="@+id/recyclerViewReminder"
+        android:padding="16dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:id="@+id/medicinesContainer"
-            android:padding="16dp">
-
-
-        </LinearLayout>
-
-    </ScrollView>
+    </androidx.recyclerview.widget.RecyclerView>
 
     <!-- Bottom Navigation Bar -->
     <LinearLayout

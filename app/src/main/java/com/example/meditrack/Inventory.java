@@ -5,21 +5,26 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Inventory extends AppCompatActivity {
 
     ImageButton homeBtn, recordsBtn, profileBtn, locationBtn;
     Button addStockBtn;
-    LinearLayout stockContainer;
+    RecyclerView recyclerView;
+    InventoryAdapter adapter;
+    List<StockItem> stockList;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
 
@@ -34,11 +39,26 @@ public class Inventory extends AppCompatActivity {
         profileBtn = findViewById(R.id.profileBtn);
         locationBtn = findViewById(R.id.locationBtn);
         addStockBtn = findViewById(R.id.addStockBtn);
-        stockContainer = findViewById(R.id.stockContainer);
+
+        recyclerView = findViewById(R.id.recyclerViewInventory);
+        stockList = new ArrayList<>();
+        adapter = new InventoryAdapter(stockList);
+
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+
         loadInventory();
+
+        addStockBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Inventory.this, AddStock.class);
+                startActivity(intent);
+            }
+        });
 
         homeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,15 +84,14 @@ public class Inventory extends AppCompatActivity {
             }
         });
 
-        addStockBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Inventory.this, AddStock.class);
-                startActivity(intent);
-            }
-        });
-
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadInventory(); // refresh list
+    }
+
     private void loadInventory() {
         if (mAuth.getCurrentUser() == null) {
             startActivity(new Intent(Inventory.this, Login.class));
@@ -83,32 +102,21 @@ public class Inventory extends AppCompatActivity {
         String userId = mAuth.getCurrentUser().getUid();
 
         db.collection("users").document(userId).collection("inventory").get().addOnSuccessListener(queryDocumentSnapshots -> {
-            stockContainer.removeAllViews();
 
-            if (queryDocumentSnapshots.isEmpty()) {
-                TextView empty = new TextView(this);
-                empty.setText("No stock yet");
-                stockContainer.addView(empty);
-                return;
-            }
+            stockList.clear();
 
             for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                String id = doc.getId();
                 String name = doc.getString("name");
                 Long quantityLong = doc.getLong("quantity");
+                String expDate = doc.getString("expDate");
 
                 int quantity = quantityLong != null ? quantityLong.intValue() : 0;
 
-                View inventoryView = getLayoutInflater().inflate(R.layout.item_stock, null);
-
-                TextView nameText = inventoryView.findViewById(R.id.stockMedName);
-                TextView quantityText = inventoryView.findViewById(R.id.stockMedQuantity);
-
-                nameText.setText(name);
-                quantityText.setText("Quantity: " + quantity);
-
-                stockContainer.addView(inventoryView);
+                stockList.add(new StockItem(id, name, quantity, expDate));
             }
-        });
 
+            adapter.notifyDataSetChanged();
+        });
     }
 }
