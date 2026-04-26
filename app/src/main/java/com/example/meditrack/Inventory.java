@@ -52,6 +52,14 @@ public class Inventory extends AppCompatActivity {
 
         loadInventory();
 
+        locationBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Inventory.this, PharmacyMap.class);
+                startActivity(intent);
+            }
+        });
+
         addStockBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -1,9 +1,11 @@
 package com.example.meditrack;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +52,10 @@ public class Records extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         loadRecords();
+
+        pdfBtn.setOnClickListener(v -> {
+            exportPDF();
+        });
 
         homeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,6 +118,43 @@ public class Records extends AppCompatActivity {
             }
 
             adapter.notifyDataSetChanged();
+        });
+    }
+    private void exportPDF() {
+        db.collection("records").get().addOnSuccessListener(queryDocumentSnapshots -> {
+
+            List<RecordPDF> records = new ArrayList<>();
+
+            for (DocumentSnapshot doc : queryDocumentSnapshots) {
+
+                String name = doc.getString("name");
+                String date = doc.getString("date");
+                String time = doc.getString("time");
+
+                Long dosageLong = doc.getLong("dosage");
+                int dosage = dosageLong != null ? dosageLong.intValue() : 0;
+
+                records.add(new RecordPDF(name, dosage, date, time));
+            }
+
+            String filePath = PDFHelper.generatePDF(this, records);
+
+            if (filePath != null) {
+                Toast.makeText(this, "PDF saved!", Toast.LENGTH_SHORT).show();
+
+                File file = new File(filePath);
+
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("application/pdf");
+                intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                startActivity(Intent.createChooser(intent, "Share PDF"));
+
+            } else {
+                Toast.makeText(this, "Error creating PDF", Toast.LENGTH_SHORT).show();
+            }
+
         });
     }
 }
