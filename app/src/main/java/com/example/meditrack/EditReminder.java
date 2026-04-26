@@ -19,7 +19,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +32,7 @@ public class EditReminder extends AppCompatActivity {
     FirebaseFirestore db;
     String id;
     String choose_time = "";
+    long startTime;
     int selectedHour = 0;
     int selectedMinute = 0;
 
@@ -59,10 +59,11 @@ public class EditReminder extends AppCompatActivity {
 
         id = getIntent().getStringExtra("id");
         String name = getIntent().getStringExtra("name");
-        String dosage = getIntent().getStringExtra("dosage");
+        int dosage = getIntent().getIntExtra("dosage", 0);
         String time = getIntent().getStringExtra("time");
         String interval = getIntent().getStringExtra("interval");
         String duration = getIntent().getStringExtra("duration");
+        startTime = getIntent().getLongExtra("startTime", 0);
 
         String[] intervalOptions = {"Hours", "Days", "Weeks"};
         String[] durationOptions = {"Days", "Weeks", "Months"};
@@ -77,7 +78,7 @@ public class EditReminder extends AppCompatActivity {
         editSpinnerDuration.setAdapter(durationAdapter);
 
         editMedName.setText(name);
-        editDosage.setText(dosage);
+        editDosage.setText(String.valueOf(dosage));
         String[] intervalSplit = interval.split(" ");
         editInterval.setText(intervalSplit[0]);
         setSpinner(editSpinnerInterval, intervalSplit[1]);
@@ -113,19 +114,19 @@ public class EditReminder extends AppCompatActivity {
 
         saveBtn.setOnClickListener(view -> {
             updateReminder();
-            cancelAlarm();
-            setUpdatedAlarm();
         });
     }
+
+    String durationNo, durationType;
     private void updateReminder() {
         String name = editMedName.getText().toString().trim();
-        String dosage = editDosage.getText().toString().trim();
+        int dosage = Integer.parseInt(editDosage.getText().toString().trim());
         String intervalNo = editInterval.getText().toString().trim();
         String intervalType = editSpinnerInterval.getSelectedItem().toString().trim();
-        String durationNo = editDuration.getText().toString().trim();
-        String durationType = editSpinnerDuration.getSelectedItem().toString().trim();
+        durationNo = editDuration.getText().toString().trim();
+        durationType = editSpinnerDuration.getSelectedItem().toString().trim();
 
-        if (name.isEmpty() || dosage.isEmpty() || intervalNo.isEmpty() || durationNo.isEmpty() || choose_time.isEmpty()) {
+        if (name.isEmpty() || intervalNo.isEmpty() || durationNo.isEmpty() || choose_time.isEmpty()) {
             Toast.makeText(EditReminder.this, "Fill all Fields", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -147,75 +148,42 @@ public class EditReminder extends AppCompatActivity {
         updatedReminder.put("interval", interval);
         updatedReminder.put("duration", duration);
 
-        db.collection("users").document(userId).collection("reminder").document(id).update(updatedReminder).addOnSuccessListener(unused -> {
-            Toast.makeText(this, "Reminder Updated", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(EditReminder.this, HomePage.class);
-            startActivity(intent);
-        }).addOnFailureListener(e -> {
-            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-        });
-    }
-    private void cancelAlarm() {
+        db.collection("users")
+                .document(userId)
+                .collection("reminder")
+                .document(id)
+                .update(updatedReminder)
+                .addOnSuccessListener(unused -> {
 
-        Intent intent = new Intent(this, AlarmReceiver.class);
+                    // 🔥 IMPORTANT: cancel old alarm FIRST
+                    AlarmHelper.cancelAlarm(this, id);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                this, id.hashCode(), intent, PendingIntent.FLAG_IMMUTABLE
-        );
+                    // 🔥 then set new alarm
+                    AlarmHelper.setAlarm(
+                            this,
+                            id,
+                            selectedHour,
+                            selectedMinute,
+                            editMedName.getText().toString(),
+                            Integer.parseInt( editDosage.getText().toString()),
+                            editInterval.getText().toString(),
+                            editSpinnerInterval.getSelectedItem().toString(),
+                            editDuration.getText().toString(),
+                            editSpinnerDuration.getSelectedItem().toString(),
+                            startTime // IMPORTANT: keep original start time
+                    );
 
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                    Toast.makeText(this, "Reminder Updated", Toast.LENGTH_SHORT).show();
 
-        if (alarmManager != null) {
-            alarmManager.cancel(pendingIntent);
-        }
-    }
-    private void setUpdatedAlarm() {
+                    Intent intent = new Intent(EditReminder.this, HomePage.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish();
 
-        // If user didn’t change time, use existing button text
-        if (choose_time.isEmpty()) {
-            choose_time = timePicker.getText().toString();
-        }
-
-        String[] timeSplit = choose_time.split(":");
-        int hour = Integer.parseInt(timeSplit[0]);
-        int minute = Integer.parseInt(timeSplit[1]);
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, hour);
-        calendar.set(Calendar.MINUTE, minute);
-        calendar.set(Calendar.SECOND, 0);
-
-        if (calendar.before(Calendar.getInstance())) {
-            calendar.add(Calendar.DATE, 1);
-        }
-
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        intent.putExtra("name", editMedName.getText().toString());
-        intent.putExtra("dosage", editDosage.getText().toString());
-
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                this,
-                id.hashCode(), // MUST match cancelAlarm
-                intent,
-                PendingIntent.FLAG_IMMUTABLE
-        );
-
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            if (!alarmManager.canScheduleExactAlarms()) {
-                startActivity(new Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM));
-                return;
-            }
-        }
-
-        if (alarmManager != null) {
-            alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    calendar.getTimeInMillis(),
-                    pendingIntent
-            );
-        }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
     private void setSpinner(Spinner spinner, String value) {
         ArrayAdapter adapter = (ArrayAdapter) spinner.getAdapter();

@@ -104,12 +104,18 @@ public class HomePage extends AppCompatActivity {
             for (DocumentSnapshot doc : queryDocumentSnapshots) {
                 String id = doc.getId();
                 String name = doc.getString("name");
-                String dosage = doc.getString("dosage");
+                Long dosageLong = doc.getLong("dosage");
+                int dosage = dosageLong != null ? dosageLong.intValue() : 0;
                 String time = doc.getString("time");
                 String interval = doc.getString("interval");
                 String duration = doc.getString("duration");
+                String intervalNo = doc.getString("intervalNo") != null ? doc.getString("intervalNo") : "0";
+                String intervalType = doc.getString("intervalType") != null ? doc.getString("intervalType") : "";
+                String durationNo = doc.getString("durationNo") != null ? doc.getString("durationNo") : "0";
+                String durationType = doc.getString("durationType") != null ? doc.getString("durationType") : "";
+                long startTime = doc.getLong("startTime") != null ? doc.getLong("startTime") : 0;
 
-                remindList.add(new RemindMed(id, name, dosage, time, interval, duration));
+                remindList.add(new RemindMed(id, name, dosage, time, interval, duration, intervalNo, intervalType, durationNo, durationType,startTime, 0,0));
             }
             adapter.notifyDataSetChanged();
         });

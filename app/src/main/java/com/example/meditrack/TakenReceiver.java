@@ -3,11 +3,12 @@ package com.example.meditrack;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -18,16 +19,19 @@ public class TakenReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
+        String userId = intent.getStringExtra("userId"); // ✅ PASS THIS IN INTENT
+        String reminderId = intent.getStringExtra("reminderId");
+
         String name = intent.getStringExtra("name");
-        String dosage = intent.getStringExtra("dosage");
+        int dosage = Integer.parseInt(intent.getStringExtra("dosage"));
+        String intervalStr = intent.getStringExtra("interval");
+        String durationStr = intent.getStringExtra("duration");
+
+        if (userId == null) return;
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-        if (mAuth.getCurrentUser() == null) return;
-
-        String userId = mAuth.getCurrentUser().getUid();
-
+        // ✅ 1. CREATE RECORD
         String date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
         String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
 
@@ -36,10 +40,53 @@ public class TakenReceiver extends BroadcastReceiver {
         record.put("dosage", dosage);
         record.put("date", date);
         record.put("time", time);
+        record.put("timestamp", System.currentTimeMillis()); // 🔥 REQUIRED
 
         db.collection("users")
                 .document(userId)
                 .collection("records")
                 .add(record);
+
+        // ✅ 2. DELETE CURRENT REMINDER
+        if (reminderId != null) {
+            db.collection("users")
+                    .document(userId)
+                    .collection("reminder")
+                    .document(reminderId)
+                    .delete();
+        }
+
+        // ✅ 3. CREATE NEXT REMINDER
+        if (intervalStr != null && durationStr != null) {
+
+            int interval = Integer.parseInt(intervalStr); // hours
+            int remaining = Integer.parseInt(durationStr) - 1;
+
+            if (remaining > 0) {
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.HOUR, interval);
+
+                Map<String, Object> newReminder = new HashMap<>();
+                newReminder.put("name", name);
+                newReminder.put("dosage", dosage);
+                newReminder.put("interval", intervalStr);
+                newReminder.put("duration", String.valueOf(remaining));
+
+                // ⚠️ TEMP (works but not ideal)
+                newReminder.put("time", new SimpleDateFormat("HH:mm", Locale.getDefault())
+                        .format(calendar.getTime()));
+
+                // 🔥 BETTER (future-proof)
+                newReminder.put("timestamp", calendar.getTimeInMillis());
+
+                db.collection("users")
+                        .document(userId)
+                        .collection("reminder")
+                        .add(newReminder);
+            }
+        }
+
+        Toast.makeText(context, "Medicine taken", Toast.LENGTH_SHORT).show();
     }
 }

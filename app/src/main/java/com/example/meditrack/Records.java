@@ -54,7 +54,9 @@ public class Records extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Records.this, HomePage.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -90,19 +92,24 @@ public class Records extends AppCompatActivity {
 
         String userId = mAuth.getCurrentUser().getUid();
 
-        db.collection("users").document(userId).collection("records").orderBy("timestamp", Query.Direction.DESCENDING).get().addOnSuccessListener(queryDocumentSnapshots -> {
+        db.collection("users").document(userId).collection("records").orderBy("timestamp", Query.Direction.DESCENDING).addSnapshotListener((value, error) -> {
+
+            if (error != null || value == null) return;
 
             recordList.clear();
 
-            for (DocumentSnapshot doc: queryDocumentSnapshots) {
+            for (DocumentSnapshot doc : value.getDocuments()) {
 
                 String name = doc.getString("name");
-                String dosage = doc.getString("dosage");
+                Long dosageLong = doc.getLong("dosage");
+                int dosage = dosageLong != null ? dosageLong.intValue() : 0;
                 String date = doc.getString("date");
                 String time = doc.getString("time");
+                long timestamp = doc.getLong("timestamp");
 
-                recordList.add(new RecordItem(name, dosage, date, time));
+                recordList.add(new RecordItem(name, dosage, date, time, timestamp));
             }
+
             adapter.notifyDataSetChanged();
         });
     }

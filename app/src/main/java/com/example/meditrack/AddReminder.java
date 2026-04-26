@@ -26,13 +26,14 @@ import java.util.Map;
 
 public class AddReminder extends AppCompatActivity {
 
-    EditText medicationNameText, dosageText, intervalText, durationText;
+    EditText medicationNameText, dosageNo, intervalText, durationText;
     Button timePicker, saveBtn;
     ImageButton backBtn;
     Spinner spinnerInterval, spinnerDuration;
     FirebaseFirestore db;
     FirebaseAuth mAuth;
     String choose_time = "";
+    String userId;
     int selectedHour = 0;
     int selectedMinute = 0;
 
@@ -44,7 +45,7 @@ public class AddReminder extends AppCompatActivity {
         setContentView(R.layout.activity_add_reminder);
 
         medicationNameText = findViewById(R.id.medicationNameText);
-        dosageText = findViewById(R.id.dosageText);
+        dosageNo = findViewById(R.id.dosageNo);
         intervalText = findViewById(R.id.intervalText);
         durationText = findViewById(R.id.durationText);
 
@@ -95,89 +96,92 @@ public class AddReminder extends AppCompatActivity {
         });
 
         saveBtn.setOnClickListener(view -> {
-            setAlarm();
             saveReminder();
         });
 
     }
 
-    private void saveReminder() {
-        String name = medicationNameText.getText().toString().trim();
-        String dosage = dosageText.getText().toString().trim();
-        String intervalNo = intervalText.getText().toString().trim();
-        String intervalType = spinnerInterval.getSelectedItem().toString();
-        String durationNo = durationText.getText().toString().trim();
-        String durationType = spinnerDuration.getSelectedItem().toString();
+    String durationNo, durationType;
 
-        if (name.isEmpty() || dosage.isEmpty() || intervalNo.isEmpty() || durationNo.isEmpty() || choose_time.isEmpty()) {
-            Toast.makeText(AddReminder.this, "Fill all Fields", Toast.LENGTH_SHORT).show();
+    private void saveReminder() {
+
+        String name = medicationNameText.getText().toString().trim();
+        String dosageStr = dosageNo.getText().toString().trim();
+        if (dosageStr.isEmpty()) {
+            Toast.makeText(this, "Enter dosage", Toast.LENGTH_SHORT).show();
             return;
         }
+        int dosage;
+        try {
+            dosage = Integer.parseInt(dosageStr);
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Dosage must be a number (e.g. 2)", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String intervalNo = intervalText.getText().toString().trim();
+        String intervalType = spinnerInterval.getSelectedItem().toString();
+        durationNo = durationText.getText().toString().trim();
+        durationType = spinnerDuration.getSelectedItem().toString();
 
-        String interval = intervalNo + " " + intervalType;
-        String duration = durationNo + " " + durationType;
+        if (name.isEmpty() || intervalNo.isEmpty() || durationNo.isEmpty() || choose_time.isEmpty()) {
+            Toast.makeText(this, "Fill all Fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if (mAuth.getCurrentUser() == null) {
             Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String userId = mAuth.getCurrentUser().getUid();
+        userId = mAuth.getCurrentUser().getUid();
+
+        String interval = intervalNo + " " + intervalType;
+        String duration = durationNo + " " + durationType;
+
+        // 🔥 CREATE REAL DOCUMENT ID FIRST
+        String reminderId = db.collection("users")
+                .document(userId)
+                .collection("reminder")
+                .document()
+                .getId();
 
         Map<String, Object> reminder = new HashMap<>();
+        reminder.put("id", reminderId); // IMPORTANT for edit/delete later
         reminder.put("name", name);
         reminder.put("dosage", dosage);
         reminder.put("interval", interval);
         reminder.put("duration", duration);
         reminder.put("time", choose_time);
+        reminder.put("startTime", System.currentTimeMillis());
+        reminder.put("durationNo", durationNo);
+        reminder.put("durationType", durationType);
 
-        db.collection("users").document(userId).collection("reminder").add(reminder).addOnSuccessListener(doc -> {
-            Toast.makeText(this, "Reminder Saved!!!", Toast.LENGTH_SHORT).show();
-            finish();
-        }).addOnFailureListener(e -> {
-            Toast.makeText(this, "Error: " +e.getMessage(), Toast.LENGTH_LONG).show();
-        });
-    }
+        db.collection("users")
+                .document(userId)
+                .collection("reminder")
+                .document(reminderId)
+                .set(reminder)
+                .addOnSuccessListener(doc -> {
 
-    private void setAlarm() {
+                    // 🔥 NOW schedule alarm AFTER ID exists
+                    AlarmHelper.setAlarm(this,
+                            reminderId,
+                            selectedHour,
+                            selectedMinute,
+                            name,
+                            dosage,
+                            intervalNo,
+                            intervalType,
+                            durationNo,
+                            durationType,
+                            System.currentTimeMillis()
+                    );
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, selectedHour);
-        calendar.set(Calendar.MINUTE, selectedMinute);
-        calendar.set(Calendar.SECOND, 0);
-
-        if (calendar.before(Calendar.getInstance())) {
-            calendar.add(Calendar.DATE, 1);
-        }
-
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        intent.putExtra("name", medicationNameText.getText().toString());
-        intent.putExtra("dosage", dosageText.getText().toString());
-        intent.putExtra("intervalNo", intervalText.getText().toString());
-        intent.putExtra("intervalType", spinnerInterval.getSelectedItem().toString());
-        intent.putExtra("durationNo", durationText.getText().toString());
-        intent.putExtra("durationType", spinnerDuration.getSelectedItem().toString());
-
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                this,
-                (int) System.currentTimeMillis(),
-                intent,
-                PendingIntent.FLAG_IMMUTABLE
-        );
-
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            if (!alarmManager.canScheduleExactAlarms()) {
-                startActivity(new Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM));
-                return;
-            }
-        }
-
-        alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
-                calendar.getTimeInMillis(),
-                pendingIntent
-        );
+                    Toast.makeText(this, "Reminder Saved!", Toast.LENGTH_SHORT).show();
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
     }
 }

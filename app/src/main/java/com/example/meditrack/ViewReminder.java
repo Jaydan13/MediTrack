@@ -43,21 +43,24 @@ public class ViewReminder extends AppCompatActivity {
 
         String id = getIntent().getStringExtra("id");
         String name = getIntent().getStringExtra("name");
-        String dosage = getIntent().getStringExtra("dosage");
+        int dosage = getIntent().getIntExtra("dosage", 0);
         String time = getIntent().getStringExtra("time");
         String interval = getIntent().getStringExtra("interval");
         String duration = getIntent().getStringExtra("duration");
+        long startTime = getIntent().getLongExtra("startTime", 0);
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(ViewReminder.this, HomePage.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+                finish();
             }
         });
 
         viewMedName.setText(name);
-        viewDosage.setText(dosage);
+        viewDosage.setText(String.valueOf(dosage));
         viewTime.setText(time);
         viewInterval.setText(interval);
         viewDuration.setText(duration);
@@ -70,6 +73,7 @@ public class ViewReminder extends AppCompatActivity {
             intent.putExtra("time", time);
             intent.putExtra("interval", interval);
             intent.putExtra("duration", duration);
+            intent.putExtra("startTime", startTime);
 
             startActivity(intent);
         });
