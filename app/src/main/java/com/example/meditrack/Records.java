@@ -24,6 +24,7 @@ import java.util.List;
 public class Records extends AppCompatActivity {
 
     ImageButton homeBtn, inventoryBtn, profileBtn, pdfBtn;
+    String userId;
     RecyclerView recyclerView;
     RecordsAdapter adapter;
     List<RecordItem> recordList;
@@ -97,7 +98,7 @@ public class Records extends AppCompatActivity {
             return;
         }
 
-        String userId = mAuth.getCurrentUser().getUid();
+        userId = mAuth.getCurrentUser().getUid();
 
         db.collection("users").document(userId).collection("records").orderBy("timestamp", Query.Direction.DESCENDING).addSnapshotListener((value, error) -> {
 
@@ -121,7 +122,11 @@ public class Records extends AppCompatActivity {
         });
     }
     private void exportPDF() {
-        db.collection("records").get().addOnSuccessListener(queryDocumentSnapshots -> {
+        Toast.makeText(this, "Export started", Toast.LENGTH_SHORT).show();
+
+        userId = mAuth.getCurrentUser().getUid();
+
+        db.collection("users").document(userId).collection("records").get().addOnSuccessListener(queryDocumentSnapshots -> {
 
             List<RecordPDF> records = new ArrayList<>();
 
@@ -142,11 +147,11 @@ public class Records extends AppCompatActivity {
             if (filePath != null) {
                 Toast.makeText(this, "PDF saved!", Toast.LENGTH_SHORT).show();
 
-                File file = new File(filePath);
+                Uri uri = Uri.parse(filePath);
 
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("application/pdf");
-                intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+                intent.putExtra(Intent.EXTRA_STREAM, uri);
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
                 startActivity(Intent.createChooser(intent, "Share PDF"));

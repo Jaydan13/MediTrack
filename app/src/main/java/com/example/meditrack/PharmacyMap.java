@@ -1,10 +1,13 @@
 package com.example.meditrack;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -27,12 +30,24 @@ public class PharmacyMap extends FragmentActivity implements OnMapReadyCallback 
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
 
-    private final String API_KEY = "AIzaSyDUygHgqsoRpzJ5XYOV8VPShg1TKxXEsOs";
+    ImageButton backBtn;
+
+    private final String API_KEY = "AIzaSyAyr_f5V_NCpuVgde1xpAQ68_9Tyh0bmKc";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pharmacy_map);
+
+        backBtn = findViewById(R.id.backBtn);
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(PharmacyMap.this, Inventory.class);
+                startActivity(intent);
+            }
+        });
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -46,6 +61,8 @@ public class PharmacyMap extends FragmentActivity implements OnMapReadyCallback 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
+
+        mMap.getUiSettings().setZoomControlsEnabled(true);
 
         enableLocationAndLoadPharmacies();
     }
@@ -82,10 +99,17 @@ public class PharmacyMap extends FragmentActivity implements OnMapReadyCallback 
 
         RequestQueue queue = Volley.newRequestQueue(this);
 
+        Log.d("MAP_URL", url);
+
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {
                     try {
+
+                        Log.d("MAP_RESPONSE", response.toString());
+
                         JSONArray results = response.getJSONArray("results");
+
+                        Log.d("MAP_RESULTS_COUNT", String.valueOf(results.length()));
 
                         for (int i = 0; i < results.length(); i++) {
 

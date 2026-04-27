@@ -1,23 +1,20 @@
 package com.example.meditrack;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.provider.MediaStore;
 
-import com.itextpdf.kernel.font.PdfFont;
-import com.itextpdf.kernel.font.PdfFontFactory;
-import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
-import com.itextpdf.io.image.ImageData;
-import com.itextpdf.io.image.ImageDataFactory;
-import com.itextpdf.layout.element.Image;
-import com.itextpdf.layout.properties.HorizontalAlignment;
 
-import java.io.File;
+import java.io.OutputStream;
 import java.util.List;
 
 public class PDFHelper {
@@ -25,67 +22,55 @@ public class PDFHelper {
     public static String generatePDF(Context context, List<RecordPDF> records) {
 
         try {
-            File path = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-            File file = new File(path, "MediTrack_Records.pdf");
 
-            PdfWriter writer = new PdfWriter(file);
+            String fileName = "MediTrack_Records.pdf";
+
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Downloads.DISPLAY_NAME, fileName);
+            values.put(MediaStore.Downloads.MIME_TYPE, "application/pdf");
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                values.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+            }
+
+            Uri uri = context.getContentResolver().insert(
+                    MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                    values
+            );
+
+            if (uri == null) return null;
+
+            OutputStream outputStream = context.getContentResolver().openOutputStream(uri);
+
+            PdfWriter writer = new PdfWriter(outputStream);
             PdfDocument pdfDocument = new PdfDocument(writer);
             Document document = new Document(pdfDocument);
 
-            try {
-                // Load logo from drawable
-                ImageData imageData = ImageDataFactory.create(
-                        context.getResources().openRawResource(R.drawable.meditracklogo).readAllBytes()
-                );
-
-                Image logo = new Image(imageData);
-
-                logo.setWidth(100); // adjust size
-                logo.setAutoScale(true);
-                logo.setHorizontalAlignment(HorizontalAlignment.CENTER);
-
-                document.add(logo);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            document.add(new Paragraph("\n"));
-
-            // Fonts
-            PdfFont bold = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
-            PdfFont normal = PdfFontFactory.createFont(StandardFonts.HELVETICA);
-
             // Title
             document.add(new Paragraph("MediTrack Records\n\n")
-                    .setFont(bold)
+                    .setBold()
                     .setFontSize(16));
 
-            // Create table with 4 columns
             float[] columnWidths = {3, 2, 3, 2};
             Table table = new Table(columnWidths);
 
-            // Header cells (bold)
-            table.addHeaderCell(new Cell().add(new Paragraph("Name").setFont(bold)));
-            table.addHeaderCell(new Cell().add(new Paragraph("Dosage").setFont(bold)));
-            table.addHeaderCell(new Cell().add(new Paragraph("Date").setFont(bold)));
-            table.addHeaderCell(new Cell().add(new Paragraph("Time").setFont(bold)));
+            table.addHeaderCell(new Cell().add(new Paragraph("Name").setBold()));
+            table.addHeaderCell(new Cell().add(new Paragraph("Dosage").setBold()));
+            table.addHeaderCell(new Cell().add(new Paragraph("Date").setBold()));
+            table.addHeaderCell(new Cell().add(new Paragraph("Time").setBold()));
 
-            // Data rows
             for (RecordPDF record : records) {
 
-                table.addCell(new Cell().add(new Paragraph(record.getName()).setFont(normal)));
-                table.addCell(new Cell().add(new Paragraph(record.getDosage() + "mg").setFont(normal)));
-                table.addCell(new Cell().add(new Paragraph(record.getDate()).setFont(normal)));
-                table.addCell(new Cell().add(new Paragraph(record.getTime()).setFont(normal)));
+                table.addCell(new Cell().add(new Paragraph(record.getName())));
+                table.addCell(new Cell().add(new Paragraph(record.getDosage() + "mg")));
+                table.addCell(new Cell().add(new Paragraph(record.getDate())));
+                table.addCell(new Cell().add(new Paragraph(record.getTime())));
             }
 
-            // Add table to document
             document.add(table);
-
             document.close();
 
-            return file.getAbsolutePath();
+            return uri.toString();
 
         } catch (Exception e) {
             e.printStackTrace();
