@@ -16,8 +16,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,34 +106,37 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
                     item.getDurationType(),
                     item.getStartTime()
             );
-            // 🔥 CALCULATE NEXT TIME
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, item.getHour());
-            calendar.set(Calendar.MINUTE, item.getMinute());
-            calendar.set(Calendar.SECOND, 0);
 
-            // Move forward based on interval
+            long newTimeMillis = item.getStartTime();
+
+            long intervalMillis;
+
             int intervalNo = Integer.parseInt(item.getIntervalNo());
 
             if (item.getIntervalType().equals("Hours")) {
-                calendar.add(Calendar.HOUR_OF_DAY, intervalNo);
+                intervalMillis = intervalNo * 60 * 60 * 1000L;
             } else if (item.getIntervalType().equals("Days")) {
-                calendar.add(Calendar.DAY_OF_MONTH, intervalNo);
-            } else if (item.getIntervalType().equals("Weeks")) {
-                calendar.add(Calendar.WEEK_OF_YEAR, intervalNo);
+                intervalMillis = intervalNo * 24 * 60 * 60 * 1000L;
+            } else {
+                intervalMillis = intervalNo * 7 * 24 * 60 * 60 * 1000L;
             }
 
-            // Format new time
-            String newTime = new SimpleDateFormat("HH:mm").format(calendar.getTime());
+            newTimeMillis = item.getStartTime() + intervalMillis;
+
 
             db.collection("users")
                     .document(userId)
                     .collection("reminder")
                     .document(item.getId())
-                    .update("time", newTime);
+                    .update("startTime", newTimeMillis);
 
-            item.setTime(newTime);
-            holder.time.setText("Time: " + newTime);
+            // update local model
+            item.setStartTime(newTimeMillis);
+
+            // update UI correctly
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+
+            holder.time.setText("Time: " + sdf.format(new Date(newTimeMillis)));
 
             holder.takenBtn.postDelayed(() -> {
                 holder.takenBtn.setEnabled(true);

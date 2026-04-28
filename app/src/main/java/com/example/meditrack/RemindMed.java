@@ -39,6 +39,7 @@ public class RemindMed {
     public String getDurationNo() { return durationNo; }
     public String getDurationType() { return durationType; }
     public long getStartTime() { return startTime; }
+    public void setStartTime(long startTime) {this.startTime = startTime;}
     public int getHour() { return hour; }
     public int getMinute() { return minute; }
 }

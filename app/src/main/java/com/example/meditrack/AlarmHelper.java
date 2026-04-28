@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
 
 import java.util.Calendar;
 
@@ -32,7 +33,7 @@ public class AlarmHelper {
         calendar.set(Calendar.MINUTE, minute);
         calendar.set(Calendar.SECOND, 0);
 
-        if (calendar.before(Calendar.getInstance())) {
+        if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
             calendar.add(Calendar.DATE, 1);
         }
 
@@ -61,9 +62,16 @@ public class AlarmHelper {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (!alarmManager.canScheduleExactAlarms()) {
+
+                Intent intentSettings = new Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                intentSettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intentSettings);
+
                 return;
             }
         }
+
+        Log.d("ALARM_DEBUG", "Setting alarm for: " + calendar.getTimeInMillis());
 
         alarmManager.setExactAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,

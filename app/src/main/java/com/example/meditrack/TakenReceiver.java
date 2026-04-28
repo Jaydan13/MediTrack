@@ -23,7 +23,7 @@ public class TakenReceiver extends BroadcastReceiver {
         String reminderId = intent.getStringExtra("reminderId");
 
         String name = intent.getStringExtra("name");
-        int dosage = Integer.parseInt(intent.getStringExtra("dosage"));
+        int dosage = intent.getIntExtra("dosage", 0);
         String intervalStr = intent.getStringExtra("interval");
         String durationStr = intent.getStringExtra("duration");
 
@@ -47,6 +47,26 @@ public class TakenReceiver extends BroadcastReceiver {
                 .collection("records")
                 .add(record);
 
+        db.collection("users")
+                .document(userId)
+                .collection("inventory")
+                .whereEqualTo("name", name)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+
+                    for (com.google.firebase.firestore.DocumentSnapshot doc : snapshot) {
+
+                        Long currentQty = doc.getLong("quantity");
+                        if (currentQty == null) return;
+
+                        long newQty = currentQty - dosage;
+
+                        if (newQty < 0) newQty = 0;
+
+                        doc.getReference().update("quantity", newQty);
+                    }
+                });
+
         // ✅ 2. DELETE CURRENT REMINDER
         if (reminderId != null) {
             db.collection("users")
@@ -59,8 +79,15 @@ public class TakenReceiver extends BroadcastReceiver {
         // ✅ 3. CREATE NEXT REMINDER
         if (intervalStr != null && durationStr != null) {
 
-            int interval = Integer.parseInt(intervalStr); // hours
-            int remaining = Integer.parseInt(durationStr) - 1;
+            int interval = 1;
+            int remaining = 0;
+
+            try {
+                interval = Integer.parseInt(intervalStr);
+                remaining = Integer.parseInt(durationStr) - 1;
+            } catch (Exception e) {
+                return; // stop if invalid
+            }
 
             if (remaining > 0) {
 

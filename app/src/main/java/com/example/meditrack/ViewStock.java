@@ -43,7 +43,7 @@ public class ViewStock extends AppCompatActivity {
 
         String id = getIntent().getStringExtra("id");
         String name = getIntent().getStringExtra("name");
-        String quantity = getIntent().getStringExtra("quantity");
+        int quantity = getIntent().getIntExtra("quantity", 0);
         String expDate = getIntent().getStringExtra("expDate");
 
         backBtn.setOnClickListener(new View.OnClickListener() {

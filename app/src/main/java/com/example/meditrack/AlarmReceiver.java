@@ -8,31 +8,45 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Calendar;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
+    FirebaseAuth mAuth;
+
     @Override
     public void onReceive(Context context, Intent intent) {
 
+        Log.d("ALARM_DEBUG", "Alarm RECEIVED");
+
         String reminderId = intent.getStringExtra("reminderId");
         String name = intent.getStringExtra("name");
-        String dosage = intent.getStringExtra("dosage");
+        int dosage = intent.getIntExtra("dosage", 0);
 
         String intervalNoStr = intent.getStringExtra("intervalNo");
         String intervalType = intent.getStringExtra("intervalType");
 
         String durationNoStr = intent.getStringExtra("durationNo");
         String durationType = intent.getStringExtra("durationType");
-        String startTimeStr = intent.getStringExtra("startTime");
+        long startTime = intent.getLongExtra("startTime", 0);
 
-        if (durationNoStr == null || startTimeStr == null || reminderId == null) return;
+        mAuth = FirebaseAuth.getInstance();
 
-        long startTime = Long.parseLong(startTimeStr);
+        if (mAuth.getCurrentUser() == null) {
+            Log.d("ALARM_DEBUG", "User not logged in");
+            return;
+        }
+        String userId = mAuth.getCurrentUser().getUid();
+
+        if (durationNoStr == null || reminderId == null) return;
+
         int durationNo = Integer.parseInt(durationNoStr);
 
         Calendar endCalendar = Calendar.getInstance();
@@ -68,9 +82,12 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         // ---------------- TAKEN ACTION ----------------
         Intent takenIntent = new Intent(context, TakenReceiver.class);
+        takenIntent.putExtra("userId", userId);
         takenIntent.putExtra("reminderId", reminderId);
         takenIntent.putExtra("name", name);
         takenIntent.putExtra("dosage", dosage);
+        takenIntent.putExtra("interval", intervalNoStr);
+        takenIntent.putExtra("duration", durationNoStr);
 
         PendingIntent takenPendingIntent = PendingIntent.getBroadcast(
                 context,
@@ -115,7 +132,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         repeatIntent.putExtra("intervalType", intervalType);
         repeatIntent.putExtra("durationNo", durationNoStr);
         repeatIntent.putExtra("durationType", durationType);
-        repeatIntent.putExtra("startTime", startTimeStr);
+        repeatIntent.putExtra("startTime", startTime);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context,
