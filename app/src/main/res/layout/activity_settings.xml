@@ -7,21 +7,24 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
         android:layout_margin="16dp"
-        android:background="#4F46E5"
-        android:padding="16dp"
+        android:background="@color/blue"
+        android:tag="appTheme"
+        android:padding="10dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Profile"
+            android:text="Settings"
             android:textColor="#FFFFFF"
             android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"/>
 
     </LinearLayout>
 
@@ -32,71 +35,84 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:src="@drawable/profile"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Name: "
-                android:id="@+id/userName"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Gender: "
-                android:id="@+id/userGender"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="15dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:background="@drawable/edittext_bg"
+                android:layout_marginBottom="10dp">
 
                 <TextView
-                    android:layout_width="300dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="Colour: "
-                    android:id="@+id/colourText"/>
+                    android:layout_gravity="center_vertical"
+                    android:textSize="16sp"/>
 
-                <Button
-                    android:layout_width="100dp"
+                <Spinner
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/colourBtn"
-                    android:text="Change"/>
+                    android:id="@+id/colourSpinner"
+                    android:layout_margin="10dp"/>
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:background="@drawable/edittext_bg"
+                android:layout_marginBottom="10dp">
 
                 <TextView
-                    android:layout_width="300dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Language: "
-                    android:id="@+id/languageText"/>
+                    android:layout_weight="1"
+                    android:text="Snooze Time Limit: "
+                    android:layout_gravity="center_vertical"
+                    android:textSize="16sp"/>
 
-                <Button
-                    android:layout_width="100dp"
+                <Spinner
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/languageBtn"
-                    android:text="Change"/>
+                    android:id="@+id/snoozeSpinner"
+                    android:layout_margin="10dp"/>
 
             </LinearLayout>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/saveBtn"
+                android:text="Save"
+                android:layout_margin="10dp"
+                android:layout_gravity="center"
+                android:backgroundTint="@color/blue"
+                android:tag="appTheme"/>
+
         </LinearLayout>
 
     </ScrollView>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/logoutBtn"
+        android:text="Logout"
+        android:backgroundTint="@color/blue"
+        android:tag="appTheme"/>
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="#4F46E5"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
+        android:background="@color/blue"
+        android:tag="appTheme"
         android:orientation="horizontal"
         android:weightSum="4">
 
@@ -172,9 +188,9 @@
             <ImageButton
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:id="@+id/profileBtn"
-                android:src="@drawable/profile"
-                android:contentDescription="Profile"
+                android:id="@+id/settingsBtn"
+                android:src="@drawable/settings"
+                android:contentDescription="Settings"
                 android:background="@null"
                 android:scaleType="fitCenter"
                 android:tint="#FFFFFF"/>

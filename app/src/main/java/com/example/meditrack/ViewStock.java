@@ -28,6 +28,8 @@ public class ViewStock extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_view_stock);
 
+        ThemeHelper.applyTheme(this);
+
         backBtn = findViewById(R.id.backBtn);
         editStockBtn = findViewById(R.id.editStockBtn);
         deleteStockBtn = findViewById(R.id.deleteStockBtn);

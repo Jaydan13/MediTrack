@@ -6,30 +6,35 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
         android:layout_margin="16dp"
-        android:background="#4F46E5"
-        android:padding="16dp"
+        android:background="@color/blue"
+        android:tag="appTheme"
+        android:padding="10dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <ImageButton
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:src="@drawable/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:id="@+id/backBtn"
+            android:src="@drawable/back"
+            android:layout_gravity="center_vertical"
             android:tint="#FFFFFF"
             android:background="@null"
-            android:contentDescription="Back"/>
+            android:contentDescription="Back"
+            android:layout_marginLeft="5dp"/>
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="View Reminder"
-            android:textColor="#FFFFFF"
             android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:textColor="#FFFFFF"/>
     </LinearLayout>
 
     <ScrollView
@@ -168,7 +173,8 @@
             android:layout_weight="1"
             android:id="@+id/editRemindBtn"
             android:text="Edit"
-            android:backgroundTint="#4F46E5"/>
+            android:backgroundTint="@color/blue"
+            android:tag="appTheme"/>
 
         <Button
             android:layout_width="0dp"
@@ -176,7 +182,7 @@
             android:layout_weight="1"
             android:id="@+id/deleteRemindBtn"
             android:text="Delete"
-            android:backgroundTint="#FF0000"/>
+            android:backgroundTint="@color/red"/>
 
     </LinearLayout>
 

@@ -18,7 +18,7 @@ import java.util.List;
 
 public class HomePage extends AppCompatActivity {
 
-    ImageButton addReminder, recordsBtn, inventoryBtn, profileBtn;
+    ImageButton addReminder, recordsBtn, inventoryBtn, settingsBtn;
     RecyclerView recyclerView;
     ReminderAdapter adapter;
     List<RemindMed> remindList;
@@ -30,9 +30,11 @@ public class HomePage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
 
+        ThemeHelper.applyTheme(this);
+
         recordsBtn = findViewById(R.id.recordsBtn);
         inventoryBtn = findViewById(R.id.inventoryBtn);
-        profileBtn = findViewById(R.id.profileBtn);
+        settingsBtn = findViewById(R.id.settingsBtn);
         addReminder = findViewById(R.id.btnAddReminder);
 
         recyclerView = findViewById(R.id.recyclerViewReminder);
@@ -71,10 +73,10 @@ public class HomePage extends AppCompatActivity {
             }
         });
 
-        profileBtn.setOnClickListener(new View.OnClickListener() {
+        settingsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(HomePage.this, Profile.class);
+                Intent intent = new Intent(HomePage.this, Settings.class);
                 startActivity(intent);
             }
         });

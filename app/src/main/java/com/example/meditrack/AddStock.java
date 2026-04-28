@@ -34,6 +34,8 @@ public class AddStock extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_add_stock);
 
+        ThemeHelper.applyTheme(this);
+
         stockName = findViewById(R.id.stockName);
         stockQuantity = findViewById(R.id.stockQuantity);
 

@@ -44,6 +44,8 @@ public class AddReminder extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_add_reminder);
 
+        ThemeHelper.applyTheme(this);
+
         medicationNameText = findViewById(R.id.medicationNameText);
         dosageNo = findViewById(R.id.dosageNo);
         intervalText = findViewById(R.id.intervalText);
@@ -90,7 +92,7 @@ public class AddReminder extends AppCompatActivity {
                 selectedHour = hourOfDay;
                 selectedMinute = minute;
 
-                }, 12, 0, true);
+            }, 12, 0, true);
 
             timePickerDialog.show();
         });
@@ -100,9 +102,6 @@ public class AddReminder extends AppCompatActivity {
         });
 
     }
-
-    String durationNo, durationType;
-
     private void saveReminder() {
 
         String name = medicationNameText.getText().toString().trim();
@@ -120,8 +119,8 @@ public class AddReminder extends AppCompatActivity {
         }
         String intervalNo = intervalText.getText().toString().trim();
         String intervalType = spinnerInterval.getSelectedItem().toString();
-        durationNo = durationText.getText().toString().trim();
-        durationType = spinnerDuration.getSelectedItem().toString();
+        String durationNo = durationText.getText().toString().trim();
+        String durationType = spinnerDuration.getSelectedItem().toString();
 
         if (name.isEmpty() || intervalNo.isEmpty() || durationNo.isEmpty() || choose_time.isEmpty()) {
             Toast.makeText(this, "Fill all Fields", Toast.LENGTH_SHORT).show();

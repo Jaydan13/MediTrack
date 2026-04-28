@@ -60,7 +60,7 @@
             android:name=".AddReminder"
             android:exported="false" />
         <activity
-            android:name=".Profile"
+            android:name=".Settings"
             android:exported="false" />
         <activity
             android:name=".HomePage"

@@ -42,6 +42,8 @@ public class EditReminder extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_edit_reminder);
 
+        ThemeHelper.applyTheme(this);
+
         editMedName = findViewById(R.id.editMedName);
         editDosage = findViewById(R.id.editDosage);
         editInterval = findViewById(R.id.editInterval);

@@ -35,6 +35,8 @@ public class EditStock extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_edit_stock);
 
+        ThemeHelper.applyTheme(this);
+
         backBtn = findViewById(R.id.backBtn);
         editExpiryDate = findViewById(R.id.editExpiryDate);
         saveStockBtn = findViewById(R.id.saveStockBtn);

@@ -17,13 +17,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Records extends AppCompatActivity {
 
-    ImageButton homeBtn, inventoryBtn, profileBtn, pdfBtn;
+    ImageButton homeBtn, inventoryBtn, settingsBtn, pdfBtn;
     String userId;
     RecyclerView recyclerView;
     RecordsAdapter adapter;
@@ -37,9 +36,11 @@ public class Records extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_records);
 
+        ThemeHelper.applyTheme(this);
+
         homeBtn = findViewById(R.id.homeBtn);
         inventoryBtn = findViewById(R.id.inventoryBtn);
-        profileBtn = findViewById(R.id.profileBtn);
+        settingsBtn = findViewById(R.id.settingsBtn);
         pdfBtn = findViewById(R.id.pdfBtn);
 
         recyclerView = findViewById(R.id.recyclerViewRecords);
@@ -76,10 +77,10 @@ public class Records extends AppCompatActivity {
             }
         });
 
-        profileBtn.setOnClickListener(new View.OnClickListener() {
+        settingsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Records.this, Profile.class);
+                Intent intent = new Intent(Records.this, Settings.class);
                 startActivity(intent);
             }
         });

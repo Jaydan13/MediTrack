@@ -20,7 +20,7 @@ import java.util.List;
 
 public class Inventory extends AppCompatActivity {
 
-    ImageButton homeBtn, recordsBtn, profileBtn, locationBtn;
+    ImageButton homeBtn, recordsBtn, settingsBtn, locationBtn;
     Button addStockBtn;
     RecyclerView recyclerView;
     InventoryAdapter adapter;
@@ -34,9 +34,11 @@ public class Inventory extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_inventory);
 
+        ThemeHelper.applyTheme(this);
+
         homeBtn = findViewById(R.id.homeBtn);
         recordsBtn = findViewById(R.id.recordsBtn);
-        profileBtn = findViewById(R.id.profileBtn);
+        settingsBtn = findViewById(R.id.settingsBtn);
         locationBtn = findViewById(R.id.locationBtn);
         addStockBtn = findViewById(R.id.addStockBtn);
 
@@ -86,10 +88,10 @@ public class Inventory extends AppCompatActivity {
             }
         });
 
-        profileBtn.setOnClickListener(new View.OnClickListener() {
+        settingsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Inventory.this, Profile.class);
+                Intent intent = new Intent(Inventory.this, Settings.class);
                 startActivity(intent);
             }
         });

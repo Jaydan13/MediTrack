@@ -8,10 +8,12 @@
     <!-- Top Dashboard Card -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
         android:layout_margin="16dp"
-        android:background="#4F46E5"
-        android:padding="16dp"
+        android:background="@color/blue"
+        android:tag="appTheme"
+        android:padding="10dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -22,16 +24,20 @@
             android:text="Home"
             android:textColor="#FFFFFF"
             android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"/>
 
         <ImageButton
             android:id="@+id/btnAddReminder"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:background="@null"
             android:src="@android:drawable/ic_input_add"
             android:tint="#FFFFFF"
-            android:contentDescription="Add Medication"/>
+            android:contentDescription="Add Medication"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="5dp"/>
     </LinearLayout>
 
     <!-- Date & Time -->
@@ -58,8 +64,10 @@
     <!-- Bottom Navigation Bar -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="#4F46E5"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
+        android:background="@color/blue"
+        android:tag="appTheme"
         android:orientation="horizontal"
         android:weightSum="4">
 
@@ -135,9 +143,9 @@
             <ImageButton
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:id="@+id/profileBtn"
-                android:src="@drawable/profile"
-                android:contentDescription="Profile"
+                android:id="@+id/settingsBtn"
+                android:src="@drawable/settings"
+                android:contentDescription="Settings"
                 android:background="@null"
                 android:scaleType="fitCenter"
                 android:tint="#FFFFFF"/>

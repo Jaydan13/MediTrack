@@ -27,6 +27,8 @@ public class Login extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
 
+        ThemeHelper.applyTheme(this);
+
         emailText = findViewById(R.id.emailText);
         passwordText = findViewById(R.id.passwordText);
 

@@ -75,7 +75,8 @@
                 android:id="@+id/loginReturnBtn"
                 android:text="Back"
                 android:layout_marginRight="5dp"
-                android:backgroundTint="#4F46E5"/>
+                android:backgroundTint="@color/blue"
+                android:tag="appTheme"/>
 
             <!-- Register Button -->
             <Button
@@ -84,7 +85,8 @@
                 android:id="@+id/registerBtn"
                 android:text="Register"
                 android:layout_marginLeft="5dp"
-                android:backgroundTint="#4F46E5"/>
+                android:backgroundTint="@color/blue"
+                android:tag="appTheme"/>
 
         </LinearLayout>
 

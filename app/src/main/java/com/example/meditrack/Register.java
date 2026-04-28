@@ -34,6 +34,8 @@ public class Register extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_register);
 
+        ThemeHelper.applyTheme(this);
+
         newEmail = findViewById(R.id.newEmail);
         newPass = findViewById(R.id.newPass);
         checkNewPass = findViewById(R.id.checkNewPass);

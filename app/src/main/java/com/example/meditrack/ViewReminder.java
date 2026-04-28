@@ -28,6 +28,8 @@ public class ViewReminder extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_view_reminder);
 
+        ThemeHelper.applyTheme(this);
+
         backBtn = findViewById(R.id.backBtn);
         editRemindBtn = findViewById(R.id.editRemindBtn);
         deleteRemindBtn = findViewById(R.id.deleteRemindBtn);

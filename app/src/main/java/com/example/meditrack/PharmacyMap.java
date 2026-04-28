@@ -39,6 +39,8 @@ public class PharmacyMap extends FragmentActivity implements OnMapReadyCallback 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pharmacy_map);
 
+        ThemeHelper.applyTheme(this);
+
         backBtn = findViewById(R.id.backBtn);
 
         backBtn.setOnClickListener(new View.OnClickListener() {
