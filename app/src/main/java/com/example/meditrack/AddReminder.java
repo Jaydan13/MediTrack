@@ -26,6 +26,7 @@ import java.util.Map;
 
 public class AddReminder extends AppCompatActivity {
 
+    //Variables
     EditText medicationNameText, dosageNo, intervalText, durationText;
     Button timePicker, saveBtn;
     ImageButton backBtn;
@@ -46,6 +47,7 @@ public class AddReminder extends AppCompatActivity {
 
         ThemeHelper.applyTheme(this);
 
+        //Assigning Variables to the XML Id's
         medicationNameText = findViewById(R.id.medicationNameText);
         dosageNo = findViewById(R.id.dosageNo);
         intervalText = findViewById(R.id.intervalText);
@@ -61,6 +63,7 @@ public class AddReminder extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
+        //Spinner Setup
         String[] intervalOptions = {"Hours", "Days", "Weeks"};
         String[] durationOptions = {"Days", "Weeks", "Months"};
 
@@ -73,6 +76,7 @@ public class AddReminder extends AppCompatActivity {
         spinnerInterval.setAdapter(intervalAdapter);
         spinnerDuration.setAdapter(durationAdapter);
 
+        //Back Button
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,6 +85,7 @@ public class AddReminder extends AppCompatActivity {
             }
         });
 
+        //Select Time
         timePicker.setOnClickListener(v -> {
 
             TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
@@ -97,13 +102,14 @@ public class AddReminder extends AppCompatActivity {
             timePickerDialog.show();
         });
 
+        //Save Button
         saveBtn.setOnClickListener(view -> {
             saveReminder();
         });
 
     }
     private void saveReminder() {
-
+        //Get all inputs
         String name = medicationNameText.getText().toString().trim();
         String dosageStr = dosageNo.getText().toString().trim();
         if (dosageStr.isEmpty()) {
@@ -122,11 +128,13 @@ public class AddReminder extends AppCompatActivity {
         String durationNo = durationText.getText().toString().trim();
         String durationType = spinnerDuration.getSelectedItem().toString();
 
+        //Check if Fields Empty
         if (name.isEmpty() || intervalNo.isEmpty() || durationNo.isEmpty() || choose_time.isEmpty()) {
             Toast.makeText(this, "Fill all Fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        //To make sure user is logged in
         if (mAuth.getCurrentUser() == null) {
             Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
             return;
@@ -137,15 +145,12 @@ public class AddReminder extends AppCompatActivity {
         String interval = intervalNo + " " + intervalType;
         String duration = durationNo + " " + durationType;
 
-        // 🔥 CREATE REAL DOCUMENT ID FIRST
-        String reminderId = db.collection("users")
-                .document(userId)
-                .collection("reminder")
-                .document()
-                .getId();
+        //Create collection in FireStore
+        String reminderId = db.collection("users").document(userId).collection("reminder").document().getId();
 
+        //Add to FireStore
         Map<String, Object> reminder = new HashMap<>();
-        reminder.put("id", reminderId); // IMPORTANT for edit/delete later
+        reminder.put("id", reminderId);
         reminder.put("name", name);
         reminder.put("dosage", dosage);
         reminder.put("interval", interval);
@@ -155,14 +160,10 @@ public class AddReminder extends AppCompatActivity {
         reminder.put("durationNo", durationNo);
         reminder.put("durationType", durationType);
 
-        db.collection("users")
-                .document(userId)
-                .collection("reminder")
-                .document(reminderId)
-                .set(reminder)
-                .addOnSuccessListener(doc -> {
+        //Get reminder details from FireStore
+        db.collection("users").document(userId).collection("reminder").document(reminderId).set(reminder).addOnSuccessListener(doc -> {
 
-                    // 🔥 NOW schedule alarm AFTER ID exists
+                    //Set Alarm
                     AlarmHelper.setAlarm(this,
                             reminderId,
                             selectedHour,

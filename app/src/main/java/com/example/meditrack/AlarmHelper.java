@@ -11,22 +11,8 @@ import java.util.Calendar;
 
 public class AlarmHelper {
 
-    // =========================
-    // SET ALARM
-    // =========================
-    public static void setAlarm(
-            Context context,
-            String reminderId,
-            int hour,
-            int minute,
-            String name,
-            int dosage,
-            String intervalNo,
-            String intervalType,
-            String durationNo,
-            String durationType,
-            long startTime
-    ) {
+    //Set Alarm Function
+    public static void setAlarm(Context context, String reminderId, int hour, int minute, String name, int dosage, String intervalNo, String intervalType, String durationNo, String durationType, long startTime) {
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, hour);
@@ -37,6 +23,7 @@ public class AlarmHelper {
             calendar.add(Calendar.DATE, 1);
         }
 
+        //Send data to Alarm Receiver Class
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.putExtra("reminderId", reminderId);
         intent.putExtra("name", name);
@@ -80,9 +67,7 @@ public class AlarmHelper {
         );
     }
 
-    // =========================
-    // CANCEL ALARM
-    // =========================
+    //Cancel Alarm Function
     public static void cancelAlarm(Context context, String reminderId) {
 
         Intent intent = new Intent(context, AlarmReceiver.class);

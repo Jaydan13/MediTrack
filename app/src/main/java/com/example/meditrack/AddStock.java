@@ -21,8 +21,9 @@ import java.util.Map;
 
 public class AddStock extends AppCompatActivity {
 
+    //Variables
     EditText stockName, stockQuantity;
-    ImageButton backBtn, barcodeBtn;
+    ImageButton backBtn;
     Button expiryDate, saveStockBtn;
     String selectedExpiry = "";
     FirebaseAuth mAuth;
@@ -36,17 +37,18 @@ public class AddStock extends AppCompatActivity {
 
         ThemeHelper.applyTheme(this);
 
+        //Assigning Variables to the XML Id's
         stockName = findViewById(R.id.stockName);
         stockQuantity = findViewById(R.id.stockQuantity);
 
         backBtn = findViewById(R.id.backBtn);
-        barcodeBtn = findViewById(R.id.barcodeBtn);
         expiryDate = findViewById(R.id.expiryDate);
         saveStockBtn = findViewById(R.id.saveStockBtn);
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        //Back Button
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -55,6 +57,7 @@ public class AddStock extends AppCompatActivity {
             }
         });
 
+        //Expiry Date Selector
         expiryDate.setOnClickListener(v -> {
 
             Calendar calendar = Calendar.getInstance();
@@ -69,12 +72,15 @@ public class AddStock extends AppCompatActivity {
             datePicker.show();
         });
 
+        //Save Button
         saveStockBtn.setOnClickListener(v -> saveStock());
     }
     private void saveStock() {
+        //Get all inputs
         String name = stockName.getText().toString().trim();
         String strQuantity = stockQuantity.getText().toString().trim();
 
+        //Check if Fields empty
         if (name.isEmpty() || strQuantity.isEmpty() || selectedExpiry.isEmpty()) {
             Toast.makeText(this, "Fill all fields", Toast.LENGTH_SHORT).show();
             return;
@@ -82,6 +88,7 @@ public class AddStock extends AppCompatActivity {
 
         int quantity = Integer.parseInt(strQuantity);
 
+        //Check if user is logged in
         if (mAuth.getCurrentUser() == null) {
             Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
             return;
@@ -89,6 +96,7 @@ public class AddStock extends AppCompatActivity {
 
         String userId = mAuth.getCurrentUser().getUid();
 
+        //Add to FireStore
         Map<String, Object> stock = new HashMap<>();
         stock.put("name", name);
         stock.put("quantity", quantity);

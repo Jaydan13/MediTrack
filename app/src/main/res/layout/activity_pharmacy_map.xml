@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!-- Top Banner -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -21,7 +22,7 @@
             android:id="@+id/backBtn"
             android:src="@drawable/back"
             android:layout_gravity="center_vertical"
-            android:tint="#FFFFFF"
+            android:tint="@color/white"
             android:background="@null"
             android:contentDescription="Back"
             android:layout_marginLeft="5dp"/>
@@ -34,10 +35,11 @@
             android:textStyle="bold"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="10dp"
-            android:textColor="#FFFFFF"/>
+            android:textColor="@color/white"/>
 
     </LinearLayout>
 
+    <!-- Map -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"

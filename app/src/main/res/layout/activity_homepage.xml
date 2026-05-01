@@ -2,10 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#F5F7FA">
+    android:layout_height="match_parent">
 
-    <!-- Top Dashboard Card -->
+    <!-- Top Banner -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -22,36 +21,35 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Home"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="5dp"/>
 
+        <!-- Add Reminders -->
         <ImageButton
             android:id="@+id/btnAddReminder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@null"
             android:src="@android:drawable/ic_input_add"
-            android:tint="#FFFFFF"
+            android:tint="@color/white"
             android:contentDescription="Add Medication"
             android:layout_gravity="center_vertical"
             android:layout_marginRight="5dp"/>
     </LinearLayout>
 
-    <!-- Date & Time -->
     <TextView
-        android:id="@+id/txtDateTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Monday, 18 January 2026 • 16:30"
-        android:textSize="14sp"
-        android:textColor="#333333"
+        android:text="Your Reminders:"
+        android:textStyle="bold"
+        android:textSize="16sp"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="12dp"/>
 
-    <!-- Medication Reminder List -->
+    <!-- Medication Reminders -->
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -61,7 +59,7 @@
 
     </androidx.recyclerview.widget.RecyclerView>
 
-    <!-- Bottom Navigation Bar -->
+    <!-- Navigation Bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -88,7 +86,7 @@
                 android:contentDescription="Home "
                 android:background="@null"
                 android:scaleType="fitCenter"
-                android:tint="#FFFFFF"/>
+                android:tint="@color/white"/>
         </LinearLayout>
 
         <!-- Records -->
@@ -108,7 +106,7 @@
                 android:contentDescription="Records"
                 android:background="@null"
                 android:scaleType="fitCenter"
-                android:tint="#FFFFFF"/>
+                android:tint="@color/white"/>
         </LinearLayout>
 
         <!-- Inventory -->
@@ -128,10 +126,10 @@
                 android:contentDescription="Inventory"
                 android:background="@null"
                 android:scaleType="fitCenter"
-                android:tint="#FFFFFF"/>
+                android:tint="@color/white"/>
         </LinearLayout>
 
-        <!-- Profile -->
+        <!-- Settings -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -148,7 +146,7 @@
                 android:contentDescription="Settings"
                 android:background="@null"
                 android:scaleType="fitCenter"
-                android:tint="#FFFFFF"/>
+                android:tint="@color/white"/>
         </LinearLayout>
 
     </LinearLayout>
