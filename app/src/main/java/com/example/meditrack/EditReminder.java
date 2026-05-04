@@ -24,6 +24,7 @@ import java.util.Map;
 
 public class EditReminder extends AppCompatActivity {
 
+    //Variables
     EditText editMedName, editDosage, editInterval, editDuration;
     Spinner editSpinnerInterval, editSpinnerDuration;
     Button timePicker, saveBtn;
@@ -44,6 +45,7 @@ public class EditReminder extends AppCompatActivity {
 
         ThemeHelper.applyTheme(this);
 
+        //Assigning Variables to XML Id's
         editMedName = findViewById(R.id.editMedName);
         editDosage = findViewById(R.id.editDosage);
         editInterval = findViewById(R.id.editInterval);
@@ -59,6 +61,7 @@ public class EditReminder extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        //Get data from View Reminder
         id = getIntent().getStringExtra("id");
         String name = getIntent().getStringExtra("name");
         int dosage = getIntent().getIntExtra("dosage", 0);
@@ -67,6 +70,7 @@ public class EditReminder extends AppCompatActivity {
         String duration = getIntent().getStringExtra("duration");
         startTime = getIntent().getLongExtra("startTime", 0);
 
+        //Spinner Setup
         String[] intervalOptions = {"Hours", "Days", "Weeks"};
         String[] durationOptions = {"Days", "Weeks", "Months"};
 
@@ -79,6 +83,7 @@ public class EditReminder extends AppCompatActivity {
         editSpinnerInterval.setAdapter(intervalAdapter);
         editSpinnerDuration.setAdapter(durationAdapter);
 
+        //Display old data to screen
         editMedName.setText(name);
         editDosage.setText(String.valueOf(dosage));
         String[] intervalSplit = interval.split(" ");
@@ -90,6 +95,7 @@ public class EditReminder extends AppCompatActivity {
         choose_time = time;
         timePicker.setText(time);
 
+        //Back Button
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -98,6 +104,7 @@ public class EditReminder extends AppCompatActivity {
             }
         });
 
+        //Select time for reminder
         timePicker.setOnClickListener(v -> {
 
             TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
@@ -105,7 +112,6 @@ public class EditReminder extends AppCompatActivity {
                 choose_time = String.format("%02d:%02d", hourOfDay, minute);
                 timePicker.setText(choose_time);
 
-                // Save for alarm use
                 selectedHour = hourOfDay;
                 selectedMinute = minute;
 
@@ -114,13 +120,16 @@ public class EditReminder extends AppCompatActivity {
             timePickerDialog.show();
         });
 
+        //Save Button
         saveBtn.setOnClickListener(view -> {
             updateReminder();
         });
     }
 
     String durationNo, durationType;
+    // update reminder function
     private void updateReminder() {
+        //Get input data
         String name = editMedName.getText().toString().trim();
         int dosage = Integer.parseInt(editDosage.getText().toString().trim());
         String intervalNo = editInterval.getText().toString().trim();
@@ -128,6 +137,7 @@ public class EditReminder extends AppCompatActivity {
         durationNo = editDuration.getText().toString().trim();
         durationType = editSpinnerDuration.getSelectedItem().toString().trim();
 
+        //Validations
         if (name.isEmpty() || intervalNo.isEmpty() || durationNo.isEmpty() || choose_time.isEmpty()) {
             Toast.makeText(EditReminder.this, "Fill all Fields", Toast.LENGTH_SHORT).show();
             return;
@@ -157,10 +167,10 @@ public class EditReminder extends AppCompatActivity {
                 .update(updatedReminder)
                 .addOnSuccessListener(unused -> {
 
-                    // 🔥 IMPORTANT: cancel old alarm FIRST
+                    //Cancel old alarm
                     AlarmHelper.cancelAlarm(this, id);
 
-                    // 🔥 then set new alarm
+                    //Set new alarm
                     AlarmHelper.setAlarm(
                             this,
                             id,
@@ -172,7 +182,7 @@ public class EditReminder extends AppCompatActivity {
                             editSpinnerInterval.getSelectedItem().toString(),
                             editDuration.getText().toString(),
                             editSpinnerDuration.getSelectedItem().toString(),
-                            startTime // IMPORTANT: keep original start time
+                            startTime
                     );
 
                     Toast.makeText(this, "Reminder Updated", Toast.LENGTH_SHORT).show();
@@ -187,6 +197,7 @@ public class EditReminder extends AppCompatActivity {
                     Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+    //to display old spinner input
     private void setSpinner(Spinner spinner, String value) {
         ArrayAdapter adapter = (ArrayAdapter) spinner.getAdapter();
         int position = adapter.getPosition(value);

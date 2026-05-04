@@ -21,6 +21,7 @@ import java.util.Map;
 
 public class EditStock extends AppCompatActivity {
 
+    //Variables
     ImageButton backBtn;
     TextView editStockName, editStockQuantity;
     Button editExpiryDate, saveStockBtn;
@@ -37,6 +38,7 @@ public class EditStock extends AppCompatActivity {
 
         ThemeHelper.applyTheme(this);
 
+        //Assigning variables to XML Id's
         backBtn = findViewById(R.id.backBtn);
         editExpiryDate = findViewById(R.id.editExpiryDate);
         saveStockBtn = findViewById(R.id.saveStockBtn);
@@ -47,16 +49,19 @@ public class EditStock extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        //Get data from View Stock
         id = getIntent().getStringExtra("id");
         String name = getIntent().getStringExtra("name");
         int quantity = getIntent().getIntExtra("quantity", 0);
         String expDate = getIntent().getStringExtra("expDate");
 
+        //Display old data
         editStockName.setText(name);
-        editStockQuantity.setText(quantity);
+        editStockQuantity.setText(String.valueOf(quantity));
         editExpiryDate.setText(expDate);
         selectedExpiry = expDate;
 
+        //Back Button
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -65,6 +70,7 @@ public class EditStock extends AppCompatActivity {
             }
         });
 
+        //Set expiry date
         editExpiryDate.setOnClickListener(v -> {
 
             Calendar calendar = Calendar.getInstance();
@@ -79,12 +85,15 @@ public class EditStock extends AppCompatActivity {
             datePicker.show();
         });
 
+        //Save Button
         saveStockBtn.setOnClickListener(v -> updateStock());
     }
     private void updateStock() {
+        //Get data input
         String name = editStockName.getText().toString().trim();
         String strQuantity = editStockQuantity.getText().toString().trim();
 
+        //Validations
         if (name.isEmpty() || strQuantity.isEmpty() || selectedExpiry.isEmpty()) {
             Toast.makeText(this, "Fill all fields", Toast.LENGTH_SHORT).show();
             return;

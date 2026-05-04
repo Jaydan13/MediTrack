@@ -18,6 +18,7 @@ import java.util.List;
 
 public class HomePage extends AppCompatActivity {
 
+    //Variables
     ImageButton addReminder, recordsBtn, inventoryBtn, settingsBtn;
     RecyclerView recyclerView;
     ReminderAdapter adapter;
@@ -32,6 +33,7 @@ public class HomePage extends AppCompatActivity {
 
         ThemeHelper.applyTheme(this);
 
+        //Assigning variables to XML Id's
         recordsBtn = findViewById(R.id.recordsBtn);
         inventoryBtn = findViewById(R.id.inventoryBtn);
         settingsBtn = findViewById(R.id.settingsBtn);
@@ -44,11 +46,12 @@ public class HomePage extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
+        //Recycler View to load data from Reminder Collection in FireStore
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+        loadReminders();
 
-        loadMedicines();
-
+        //Buttons
         addReminder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,13 +86,15 @@ public class HomePage extends AppCompatActivity {
 
     }
 
+    // refresh list
     @Override
     protected void onResume() {
         super.onResume();
-        loadMedicines(); // refresh list
+        loadReminders();
     }
 
-    private void loadMedicines() {
+    //load reminders using recycler view
+    private void loadReminders() {
 
         if (mAuth.getCurrentUser() == null) {
             startActivity(new Intent(HomePage.this, Login.class));

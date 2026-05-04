@@ -1,5 +1,7 @@
 package com.example.meditrack;
 
+import com.example.meditrack.StockNotificationHelper;
+
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -18,7 +20,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +89,15 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
                             if (newQty < 0) newQty = 0;
 
                             doc.getReference().update("quantity", newQty);
+
+                            if (newQty <= 5) {
+
+                                Context context = v.getContext();
+
+                                String message = item.getName() + " is low in stock (" + newQty + ")";
+
+                                StockNotificationHelper.sendLowStockNotification(context, message);
+                            }
                         }
                     });
 

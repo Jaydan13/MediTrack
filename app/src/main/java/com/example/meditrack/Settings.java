@@ -1,5 +1,6 @@
 package com.example.meditrack;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -7,7 +8,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import android.app.AlertDialog.Builder;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,8 +22,8 @@ import com.google.firebase.auth.FirebaseAuth;
 public class Settings extends AppCompatActivity {
 
     ImageButton homeBtn, recordsBtn, inventoryBtn;
-    Spinner colourSpinner, snoozeSpinner;
-    Button saveBtn, logoutBtn;
+    Spinner colourSpinner;
+    Button infoBtn, saveBtn, logoutBtn;
     FirebaseAuth mAuth;
 
     @Override
@@ -35,28 +39,24 @@ public class Settings extends AppCompatActivity {
         inventoryBtn = findViewById(R.id.inventoryBtn);
 
         colourSpinner = findViewById(R.id.colourSpinner);
-        snoozeSpinner = findViewById(R.id.snoozeSpinner);
 
+        infoBtn = findViewById(R.id.infoBtn);
         saveBtn = findViewById(R.id.saveBtn);
         logoutBtn = findViewById(R.id.logoutBtn);
 
         mAuth = FirebaseAuth.getInstance();
 
         String[] colourOptions = {"Blue", "Green", "Orange", "Pink", "Purple", "Red", "Yellow"};
-        String[] snoozeOptions = {"5 Mins", "10 Mins", "15 Mins", "20 Mins", "25 Mins", "30 Mins"};
 
         ArrayAdapter<String> colourAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, colourOptions);
         colourAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        ArrayAdapter<String> snoozeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, snoozeOptions);
-        snoozeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
         colourSpinner.setAdapter(colourAdapter);
-        snoozeSpinner.setAdapter(snoozeAdapter);
+
+        infoBtn.setOnClickListener(view -> showAppInfoDialog());
 
         saveBtn.setOnClickListener(v -> {
             changeColour();
-            changeSnooze();
             Toast.makeText(this, "Changes Saved", Toast.LENGTH_SHORT).show();
             ThemeHelper.applyTheme(this);
         });
@@ -133,10 +133,31 @@ public class Settings extends AppCompatActivity {
                 .putInt("appColourValue", colourValue)
                 .apply();
     }
+    private void showAppInfoDialog() {
 
-    private void changeSnooze() {
-        String snooze = snoozeSpinner.getSelectedItem().toString();
+        Builder builder = new Builder(this);
 
-        Toast.makeText(this, "Snooze: " + snooze, Toast.LENGTH_SHORT).show();
+        View view = getLayoutInflater().inflate(R.layout.app_info, null);
+
+        builder.setView(view);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        TextView infoText = view.findViewById(R.id.infoText);
+
+        String text = "MediTrack helps to manage your medication reminders, inventory and medical records.\n" +
+                "The app is designed to improve your medical adherence.\n" +
+                "This app has the following features:\n- Adding Reminders\n- Inventory Management\n- Check Medical Records\n" +
+                "- Export Medical Records into a PDF\n- Search for nearby Pharmacies\n\n" +
+                "This app was developed as a part of Software Engineering Final Year Project.";
+
+        infoText.setText(text);
+
+        Button closeBtn = view.findViewById(R.id.closeBtn);
+
+        closeBtn.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
     }
 }

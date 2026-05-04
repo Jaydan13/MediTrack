@@ -16,6 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Login extends AppCompatActivity {
 
+    //Variables
     EditText emailText, passwordText;
     Button loginBtn, gotoRegisterBtn;
     FirebaseAuth mAuth;
@@ -29,6 +30,7 @@ public class Login extends AppCompatActivity {
 
         ThemeHelper.applyTheme(this);
 
+        //Assigning Variables to XML Id's
         emailText = findViewById(R.id.emailText);
         passwordText = findViewById(R.id.passwordText);
 
@@ -38,6 +40,7 @@ public class Login extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        //Buttons
         gotoRegisterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -52,14 +55,17 @@ public class Login extends AppCompatActivity {
 
     private void loginUser() {
 
+        //Get data
         String email = emailText.getText().toString().trim();
         String password = passwordText.getText().toString().trim();
 
+        //Check for empty fields
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
             Toast.makeText(this, "All Fields Required!!!", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        //User Login
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
 
             if (task.isSuccessful()) {
@@ -74,6 +80,7 @@ public class Login extends AppCompatActivity {
                 db.collection("users").document(userId).get()
                         .addOnSuccessListener(documentSnapshot -> {
 
+                            //If successful login, go to home page
                             if (documentSnapshot.exists()) {
                                 String username = documentSnapshot.getString("username");
 

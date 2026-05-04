@@ -55,7 +55,7 @@ public class ViewStock extends AppCompatActivity {
         });
 
         viewMedName.setText(name);
-        viewQuantity.setText(quantity);
+        viewQuantity.setText(String.valueOf(quantity));
         viewExpDate.setText(expDate);
 
         deleteStockBtn.setOnClickListener(v -> {

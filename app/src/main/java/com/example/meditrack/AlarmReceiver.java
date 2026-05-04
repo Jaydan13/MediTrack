@@ -24,8 +24,10 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
+        //For Testing Purposes
         Log.d("ALARM_DEBUG", "Alarm RECEIVED");
 
+        //Get data from Alarm Helper
         String reminderId = intent.getStringExtra("reminderId");
         String name = intent.getStringExtra("name");
         int dosage = intent.getIntExtra("dosage", 0);
@@ -39,6 +41,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         mAuth = FirebaseAuth.getInstance();
 
+        //Validation
         if (mAuth.getCurrentUser() == null) {
             Log.d("ALARM_DEBUG", "User not logged in");
             return;
@@ -49,6 +52,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         int durationNo = Integer.parseInt(durationNoStr);
 
+        //Calculating the last date for reminder
         Calendar endCalendar = Calendar.getInstance();
         endCalendar.setTimeInMillis(startTime);
 
@@ -67,7 +71,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         long now = System.currentTimeMillis();
 
         if (now >= endTime) {
-            // Stop scheduling future alarms
             return;
         }
 
@@ -80,7 +83,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         createNotificationChannel(context);
 
-        // ---------------- TAKEN ACTION ----------------
+        // For Taken Button
         Intent takenIntent = new Intent(context, TakenReceiver.class);
         takenIntent.putExtra("userId", userId);
         takenIntent.putExtra("reminderId", reminderId);
@@ -96,7 +99,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
-        // ---------------- NOTIFICATION ----------------
+        // Notification Alert
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "med_channel")
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setContentTitle("Medicine Reminder")
@@ -107,7 +110,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         NotificationManagerCompat.from(context).notify(reminderId.hashCode(), builder.build());
 
-        // ---------------- NEXT ALARM (REPEAT) ----------------
+        // Calculate Next Alarm based on Interval
         Calendar calendar = Calendar.getInstance();
 
         if (intervalType != null) {
@@ -120,10 +123,12 @@ public class AlarmReceiver extends BroadcastReceiver {
             }
         }
 
+        //Don't reschedule after duration ends
         if (calendar.getTimeInMillis() > endTime) {
-            return; // ❌ don’t schedule beyond duration
+            return;
         }
 
+        //Set New Alarm
         Intent repeatIntent = new Intent(context, AlarmReceiver.class);
         repeatIntent.putExtra("reminderId", reminderId);
         repeatIntent.putExtra("name", name);

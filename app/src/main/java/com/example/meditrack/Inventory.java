@@ -5,9 +5,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +28,7 @@ public class Inventory extends AppCompatActivity {
     RecyclerView recyclerView;
     InventoryAdapter adapter;
     List<StockItem> stockList;
+    private static final int LOW_STOCK_THRESHOLD = 5;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
 
@@ -53,6 +57,7 @@ public class Inventory extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         loadInventory();
+        createNotificationChannel();
 
         locationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,10 +103,11 @@ public class Inventory extends AppCompatActivity {
 
     }
 
+    // refresh list
     @Override
     protected void onResume() {
         super.onResume();
-        loadInventory(); // refresh list
+        loadInventory();
     }
 
     private void loadInventory() {
@@ -117,6 +123,9 @@ public class Inventory extends AppCompatActivity {
 
             stockList.clear();
 
+            boolean lowStockFound = false;
+            StringBuilder lowStockItems = new StringBuilder();
+
             for (DocumentSnapshot doc : queryDocumentSnapshots) {
                 String id = doc.getId();
                 String name = doc.getString("name");
@@ -126,9 +135,29 @@ public class Inventory extends AppCompatActivity {
                 int quantity = quantityLong != null ? quantityLong.intValue() : 0;
 
                 stockList.add(new StockItem(id, name, quantity, expDate));
+
+                if (quantity <= LOW_STOCK_THRESHOLD) {
+                    lowStockFound = true;
+                    lowStockItems.append(name).append(" (").append(quantity).append(")\n");
+                }
             }
 
             adapter.notifyDataSetChanged();
+
         });
+    }
+    private void createNotificationChannel() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            android.app.NotificationChannel channel = new android.app.NotificationChannel(
+                    "low_stock_channel",
+                    "Low Stock Alerts",
+                    android.app.NotificationManager.IMPORTANCE_HIGH
+            );
+
+            channel.setDescription("Alerts when medication stock is low");
+
+            android.app.NotificationManager manager = getSystemService(android.app.NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
     }
 }

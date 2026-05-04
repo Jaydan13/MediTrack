@@ -27,69 +27,63 @@ public class BootReceiver extends BroadcastReceiver {
 
             String userId = auth.getCurrentUser().getUid();
 
-            db.collection("users")
-                    .document(userId)
-                    .collection("reminder")
-                    .get()
-                    .addOnSuccessListener(querySnapshot -> {
+            db.collection("users").document(userId).collection("reminder").get().addOnSuccessListener(querySnapshot -> {
+                for (var doc : querySnapshot) {
+                    Map<String, Object> data = doc.getData();
+                    String id = doc.getId();
+                    String name = (String) data.get("name");
+                    String dosage = (String) data.get("dosage");
+                    String time = (String) data.get("time");
+                    String interval = (String) data.get("interval");
 
-                        for (var doc : querySnapshot) {
+                    if (time == null || !time.contains(":")) continue;
 
-                            Map<String, Object> data = doc.getData();
+                    String[] split = time.split(":");
+                    int hour = Integer.parseInt(split[0]);
+                    int minute = Integer.parseInt(split[1]);
 
-                            String id = doc.getId();
-                            String name = (String) data.get("name");
-                            String dosage = (String) data.get("dosage");
-                            String time = (String) data.get("time");
-                            String interval = (String) data.get("interval");
+                    String[] intervalSplit = interval.split(" ");
+                    String intervalNo = intervalSplit[0];
+                    String intervalType = intervalSplit[1];
 
-                            if (time == null || !time.contains(":")) continue;
+                    //Send data to Alarm Receiver
+                    Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+                    alarmIntent.putExtra("reminderId", id);
+                    alarmIntent.putExtra("name", name);
+                    alarmIntent.putExtra("dosage", dosage);
+                    alarmIntent.putExtra("intervalNo", intervalNo);
+                    alarmIntent.putExtra("intervalType", intervalType);
 
-                            String[] split = time.split(":");
-                            int hour = Integer.parseInt(split[0]);
-                            int minute = Integer.parseInt(split[1]);
+                    int requestCode = id.hashCode();
 
-                            String[] intervalSplit = interval.split(" ");
-                            String intervalNo = intervalSplit[0];
-                            String intervalType = intervalSplit[1];
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                            context,
+                            requestCode,
+                            alarmIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+                    );
 
-                            Intent alarmIntent = new Intent(context, AlarmReceiver.class);
-                            alarmIntent.putExtra("reminderId", id);
-                            alarmIntent.putExtra("name", name);
-                            alarmIntent.putExtra("dosage", dosage);
-                            alarmIntent.putExtra("intervalNo", intervalNo);
-                            alarmIntent.putExtra("intervalType", intervalType);
+                    java.util.Calendar calendar = java.util.Calendar.getInstance();
+                    calendar.set(java.util.Calendar.HOUR_OF_DAY, hour);
+                    calendar.set(java.util.Calendar.MINUTE, minute);
+                    calendar.set(java.util.Calendar.SECOND, 0);
 
-                            int requestCode = id.hashCode();
+                    if (calendar.before(java.util.Calendar.getInstance())) {
+                        calendar.add(java.util.Calendar.DATE, 1);
+                    }
 
-                            PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                                    context,
-                                    requestCode,
-                                    alarmIntent,
-                                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-                            );
+                    AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-                            java.util.Calendar calendar = java.util.Calendar.getInstance();
-                            calendar.set(java.util.Calendar.HOUR_OF_DAY, hour);
-                            calendar.set(java.util.Calendar.MINUTE, minute);
-                            calendar.set(java.util.Calendar.SECOND, 0);
-
-                            if (calendar.before(java.util.Calendar.getInstance())) {
-                                calendar.add(java.util.Calendar.DATE, 1);
-                            }
-
-                            AlarmManager alarmManager =
-                                    (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
-                            if (alarmManager != null) {
-                                alarmManager.setExactAndAllowWhileIdle(
-                                        AlarmManager.RTC_WAKEUP,
-                                        calendar.getTimeInMillis(),
-                                        pendingIntent
-                                );
-                            }
-                        }
-                    });
+                    if (alarmManager != null) {
+                        alarmManager.cancel(pendingIntent);
+                        alarmManager.setExactAndAllowWhileIdle(
+                                AlarmManager.RTC_WAKEUP,
+                                calendar.getTimeInMillis(),
+                                pendingIntent
+                        );
+                    }
+                }
+            });
         }
     }
 }

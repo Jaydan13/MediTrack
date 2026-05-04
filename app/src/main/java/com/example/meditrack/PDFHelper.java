@@ -19,10 +19,12 @@ import java.util.List;
 
 public class PDFHelper {
 
+    //Generate PDF File using data from records
     public static String generatePDF(Context context, List<RecordPDF> records) {
 
         try {
 
+            // File name
             String fileName = "MediTrack_Records.pdf";
 
             ContentValues values = new ContentValues();
@@ -52,6 +54,7 @@ public class PDFHelper {
                     .setFontSize(16));
 
             float[] columnWidths = {3, 2, 3, 2};
+            //Create Table
             Table table = new Table(columnWidths);
 
             table.addHeaderCell(new Cell().add(new Paragraph("Name").setBold()));

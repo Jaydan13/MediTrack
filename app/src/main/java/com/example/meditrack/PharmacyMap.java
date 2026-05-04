@@ -29,7 +29,6 @@ public class PharmacyMap extends FragmentActivity implements OnMapReadyCallback 
 
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
-
     ImageButton backBtn;
 
     private final String API_KEY = "AIzaSyAyr_f5V_NCpuVgde1xpAQ68_9Tyh0bmKc";
@@ -53,9 +52,7 @@ public class PharmacyMap extends FragmentActivity implements OnMapReadyCallback 
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getSupportFragmentManager()
-                        .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
     }
@@ -71,11 +68,9 @@ public class PharmacyMap extends FragmentActivity implements OnMapReadyCallback 
 
     private void enableLocationAndLoadPharmacies() {
 
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             return;
         }
 
@@ -95,9 +90,8 @@ public class PharmacyMap extends FragmentActivity implements OnMapReadyCallback 
 
     private void fetchNearbyPharmacies(Location location) {
 
-        String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json" +
-                "?location=" + location.getLatitude() + "," + location.getLongitude() +
-                "&radius=3000&type=pharmacy&key=" + API_KEY;
+        String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json" + "?location=" +
+                location.getLatitude() + "," + location.getLongitude() + "&radius=3000&type=pharmacy&key=" + API_KEY;
 
         RequestQueue queue = Volley.newRequestQueue(this);
 
@@ -116,19 +110,13 @@ public class PharmacyMap extends FragmentActivity implements OnMapReadyCallback 
                         for (int i = 0; i < results.length(); i++) {
 
                             JSONObject obj = results.getJSONObject(i);
-                            JSONObject geo = obj.getJSONObject("geometry")
-                                    .getJSONObject("location");
+                            JSONObject geo = obj.getJSONObject("geometry").getJSONObject("location");
 
                             String name = obj.getString("name");
 
-                            LatLng pos = new LatLng(
-                                    geo.getDouble("lat"),
-                                    geo.getDouble("lng")
-                            );
+                            LatLng pos = new LatLng(geo.getDouble("lat"), geo.getDouble("lng"));
 
-                            mMap.addMarker(new MarkerOptions()
-                                    .position(pos)
-                                    .title(name)
+                            mMap.addMarker(new MarkerOptions().position(pos).title(name)
                                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
                         }
 
@@ -142,14 +130,11 @@ public class PharmacyMap extends FragmentActivity implements OnMapReadyCallback 
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == 1 && grantResults.length > 0
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == 1 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             recreate();
         }
     }

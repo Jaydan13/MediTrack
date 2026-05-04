@@ -1,10 +1,13 @@
 package com.example.meditrack;
 
+import com.example.meditrack.StockNotificationHelper;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
@@ -54,7 +57,7 @@ public class TakenReceiver extends BroadcastReceiver {
                 .get()
                 .addOnSuccessListener(snapshot -> {
 
-                    for (com.google.firebase.firestore.DocumentSnapshot doc : snapshot) {
+                    for (DocumentSnapshot doc : snapshot) {
 
                         Long currentQty = doc.getLong("quantity");
                         if (currentQty == null) return;
@@ -64,6 +67,13 @@ public class TakenReceiver extends BroadcastReceiver {
                         if (newQty < 0) newQty = 0;
 
                         doc.getReference().update("quantity", newQty);
+
+                        if (newQty <= 5) {
+
+                            String message = name + " is low in stock (" + newQty + ")";
+
+                            StockNotificationHelper.sendLowStockNotification(context, message);
+                        }
                     }
                 });
 
