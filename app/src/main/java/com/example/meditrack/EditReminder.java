@@ -1,7 +1,5 @@
 package com.example.meditrack;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -121,11 +119,33 @@ public class EditReminder extends AppCompatActivity {
         });
 
         //Save Button
-        saveBtn.setOnClickListener(view -> {
+        saveBtn.setOnClickListener(view -> checkInventory());
+    }
+    private void checkInventory() {
+        String name = editMedName.getText().toString().trim();
+
+        if (name.isEmpty()) {
+            editMedName.setError("Enter medicine name");
+            return;
+        }
+
+        String userId = mAuth.getCurrentUser().getUid();
+
+        String nameLower = name.toLowerCase();
+        db.collection("users").document(userId).collection("inventory").whereEqualTo("nameLower", nameLower).get().addOnSuccessListener(querySnapshot -> {
+
+            if (querySnapshot.isEmpty()) {
+                editMedName.setError("Medicine not in inventory");
+                editMedName.requestFocus();
+                return;
+            }
+
             updateReminder();
+
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Error checking inventory", Toast.LENGTH_SHORT).show();
         });
     }
-
     String durationNo, durationType;
     // update reminder function
     private void updateReminder() {
@@ -160,42 +180,35 @@ public class EditReminder extends AppCompatActivity {
         updatedReminder.put("interval", interval);
         updatedReminder.put("duration", duration);
 
-        db.collection("users")
-                .document(userId)
-                .collection("reminder")
-                .document(id)
-                .update(updatedReminder)
-                .addOnSuccessListener(unused -> {
+        db.collection("users").document(userId).collection("reminder").document(id).update(updatedReminder).addOnSuccessListener(unused -> {
 
-                    //Cancel old alarm
-                    AlarmHelper.cancelAlarm(this, id);
+            //Cancel Alarm
+            AlarmHelper.cancelAlarm(this, id);
 
-                    //Set new alarm
-                    AlarmHelper.setAlarm(
-                            this,
-                            id,
-                            selectedHour,
-                            selectedMinute,
-                            editMedName.getText().toString(),
-                            Integer.parseInt( editDosage.getText().toString()),
-                            editInterval.getText().toString(),
-                            editSpinnerInterval.getSelectedItem().toString(),
-                            editDuration.getText().toString(),
-                            editSpinnerDuration.getSelectedItem().toString(),
-                            startTime
-                    );
+            //Set new alarm
+            AlarmHelper.setAlarm(this,
+                    id,
+                    selectedHour,
+                    selectedMinute,
+                    editMedName.getText().toString(),
+                    Integer.parseInt(editDosage.getText().toString()),
+                    editInterval.getText().toString(),
+                    editSpinnerInterval.getSelectedItem().toString(),
+                    editDuration.getText().toString(),
+                    editSpinnerDuration.getSelectedItem().toString(),
+                    startTime
+            );
 
-                    Toast.makeText(this, "Reminder Updated", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Reminder Updated", Toast.LENGTH_SHORT).show();
 
-                    Intent intent = new Intent(EditReminder.this, HomePage.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    finish();
+            Intent intent = new Intent(EditReminder.this, HomePage.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
 
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
     }
     //to display old spinner input
     private void setSpinner(Spinner spinner, String value) {

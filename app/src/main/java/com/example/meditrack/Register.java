@@ -10,15 +10,11 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class Register extends AppCompatActivity {
 
@@ -96,18 +92,15 @@ public class Register extends AppCompatActivity {
                 userMap.put("username", user);
                 userMap.put("email", email);
 
-                db.collection("users").document(userId).set(userMap)
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(this, "Account Created Successfully", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(Register.this, Login.class));
-                            finish();
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(this, "Failed to save profile: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                        });
-
+                db.collection("users").document(userId).set(userMap).addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "Account Created Successfully", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(Register.this, Login.class));
+                    finish();
+                }).addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to save profile!", Toast.LENGTH_LONG).show();
+                });
             } else {
-                Toast.makeText(this, "Registration Failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Registration Failed!!!", Toast.LENGTH_LONG).show();
             }
         });
     }

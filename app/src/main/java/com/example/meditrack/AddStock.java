@@ -79,6 +79,7 @@ public class AddStock extends AppCompatActivity {
         //Get all inputs
         String name = stockName.getText().toString().trim();
         String strQuantity = stockQuantity.getText().toString().trim();
+        String nameLower = name.toLowerCase();
 
         //Check if Fields empty
         if (name.isEmpty() || strQuantity.isEmpty() || selectedExpiry.isEmpty()) {
@@ -99,12 +100,13 @@ public class AddStock extends AppCompatActivity {
         //Add to FireStore
         Map<String, Object> stock = new HashMap<>();
         stock.put("name", name);
+        stock.put("nameLower", nameLower);
         stock.put("quantity", quantity);
         stock.put("expDate", selectedExpiry);
 
         db.collection("users").document(userId).collection("inventory").add(stock).addOnSuccessListener(doc -> {
             Toast.makeText(this, "Stock Added", Toast.LENGTH_SHORT).show();
             finish(); // go back to Inventory
-        }).addOnFailureListener(e -> Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        }).addOnFailureListener(e -> Toast.makeText(this, "Error!!!", Toast.LENGTH_SHORT).show());
     }
 }

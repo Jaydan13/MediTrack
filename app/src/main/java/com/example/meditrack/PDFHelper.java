@@ -49,9 +49,7 @@ public class PDFHelper {
             Document document = new Document(pdfDocument);
 
             // Title
-            document.add(new Paragraph("MediTrack Records\n\n")
-                    .setBold()
-                    .setFontSize(16));
+            document.add(new Paragraph("MediTrack Records\n\n").setBold().setFontSize(16));
 
             float[] columnWidths = {3, 2, 3, 2};
             //Create Table

@@ -5,8 +5,9 @@ public class RecordPDF {
     private String name, date, time;
     private int dosage;
 
-    // ✅ REQUIRED empty constructor (Firestore safety)
-    public RecordPDF() {}
+    public RecordPDF() {
+
+    }
 
     public RecordPDF(String name, int dosage, String date, String time) {
         this.name = name;

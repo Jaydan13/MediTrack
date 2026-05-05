@@ -52,7 +52,6 @@ public class Login extends AppCompatActivity {
         loginBtn.setOnClickListener(view -> loginUser());
 
     }
-
     private void loginUser() {
 
         //Get data
@@ -77,23 +76,22 @@ public class Login extends AppCompatActivity {
 
                 String userId = mAuth.getCurrentUser().getUid();
 
-                db.collection("users").document(userId).get()
-                        .addOnSuccessListener(documentSnapshot -> {
+                db.collection("users").document(userId).get().addOnSuccessListener(documentSnapshot -> {
 
-                            //If successful login, go to home page
-                            if (documentSnapshot.exists()) {
-                                String username = documentSnapshot.getString("username");
+                    //If successful login, go to home page
+                    if (documentSnapshot.exists()) {
+                        String username = documentSnapshot.getString("username");
 
-                                Toast.makeText(this, "Welcome " + username, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Welcome " + username, Toast.LENGTH_SHORT).show();
 
-                                startActivity(new Intent(Login.this, HomePage.class));
-                                finish();
-                            } else {
-                                Toast.makeText(this, "User data not found", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        startActivity(new Intent(Login.this, HomePage.class));
+                        finish();
+                    } else {
+                        Toast.makeText(this, "User data not found", Toast.LENGTH_SHORT).show();
+                    }
+                });
             } else {
-                Toast.makeText(this, "Login Failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Login Failed!!!", Toast.LENGTH_LONG).show();
             }
         });
     }

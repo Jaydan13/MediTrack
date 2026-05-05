@@ -86,10 +86,11 @@ public class Records extends AppCompatActivity {
         });
     }
 
+    // refresh list
     @Override
     protected void onResume() {
         super.onResume();
-        loadRecords(); // refresh list
+        loadRecords();
     }
 
     private void loadRecords() {

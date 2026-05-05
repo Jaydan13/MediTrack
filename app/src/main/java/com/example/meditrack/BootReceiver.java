@@ -57,9 +57,7 @@ public class BootReceiver extends BroadcastReceiver {
                     int requestCode = id.hashCode();
 
                     PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                            context,
-                            requestCode,
-                            alarmIntent,
+                            context, requestCode, alarmIntent,
                             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
                     );
 

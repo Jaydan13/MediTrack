@@ -28,7 +28,7 @@ public class ThemeHelper {
         // Only apply if tag = "appTheme"
         if ("appTheme".equals(tag)) {
 
-            // BUTTONS → change tint
+            // BUTTONS → change background tint
             if (view instanceof Button) {
                 Button btn = (Button) view;
 

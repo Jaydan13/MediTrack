@@ -93,20 +93,15 @@ public class AlarmReceiver extends BroadcastReceiver {
         takenIntent.putExtra("duration", durationNoStr);
 
         PendingIntent takenPendingIntent = PendingIntent.getBroadcast(
-                context,
-                reminderId.hashCode(),
-                takenIntent,
+                context, reminderId.hashCode(), takenIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
         // Notification Alert
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "med_channel")
-                .setSmallIcon(android.R.drawable.ic_dialog_info)
-                .setContentTitle("Medicine Reminder")
-                .setContentText(name + " - " + dosage)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true)
-                .addAction(android.R.drawable.ic_menu_save, "Taken", takenPendingIntent);
+                .setSmallIcon(android.R.drawable.ic_dialog_info).setContentTitle("Medicine Reminder")
+                .setContentText(name + " - " + dosage).setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true).addAction(android.R.drawable.ic_menu_save, "Taken", takenPendingIntent);
 
         NotificationManagerCompat.from(context).notify(reminderId.hashCode(), builder.build());
 
@@ -140,9 +135,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         repeatIntent.putExtra("startTime", startTime);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                context,
-                reminderId.hashCode(),
-                repeatIntent,
+                context, reminderId.hashCode(), repeatIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
@@ -162,8 +155,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
             NotificationChannel channel = new NotificationChannel(
-                    "med_channel",
-                    "MediTrack Notifications",
+                    "med_channel", "MediTrack Notifications",
                     NotificationManager.IMPORTANCE_HIGH
             );
 

@@ -37,9 +37,7 @@ public class AlarmHelper {
         int requestCode = reminderId.hashCode();
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                context,
-                requestCode,
-                intent,
+                context, requestCode, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
@@ -73,9 +71,7 @@ public class AlarmHelper {
         Intent intent = new Intent(context, AlarmReceiver.class);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                context,
-                reminderId.hashCode(),
-                intent,
+                context, reminderId.hashCode(), intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 

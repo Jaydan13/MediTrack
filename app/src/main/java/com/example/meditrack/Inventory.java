@@ -5,12 +5,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -129,12 +126,13 @@ public class Inventory extends AppCompatActivity {
             for (DocumentSnapshot doc : queryDocumentSnapshots) {
                 String id = doc.getId();
                 String name = doc.getString("name");
+                String nameLower = doc.getString("nameLower");
                 Long quantityLong = doc.getLong("quantity");
                 String expDate = doc.getString("expDate");
 
                 int quantity = quantityLong != null ? quantityLong.intValue() : 0;
 
-                stockList.add(new StockItem(id, name, quantity, expDate));
+                stockList.add(new StockItem(id, name, nameLower, quantity, expDate));
 
                 if (quantity <= LOW_STOCK_THRESHOLD) {
                     lowStockFound = true;
@@ -149,8 +147,7 @@ public class Inventory extends AppCompatActivity {
     private void createNotificationChannel() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             android.app.NotificationChannel channel = new android.app.NotificationChannel(
-                    "low_stock_channel",
-                    "Low Stock Alerts",
+                    "low_stock_channel", "Low Stock Alerts",
                     android.app.NotificationManager.IMPORTANCE_HIGH
             );
 

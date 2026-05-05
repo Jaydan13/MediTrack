@@ -92,6 +92,7 @@ public class EditStock extends AppCompatActivity {
         //Get data input
         String name = editStockName.getText().toString().trim();
         String strQuantity = editStockQuantity.getText().toString().trim();
+        String nameLower = name.toLowerCase();
 
         //Validations
         if (name.isEmpty() || strQuantity.isEmpty() || selectedExpiry.isEmpty()) {
@@ -109,6 +110,7 @@ public class EditStock extends AppCompatActivity {
 
         Map<String, Object> updatedStock = new HashMap<>();
         updatedStock.put("name", name);
+        updatedStock.put("nameLower", nameLower);
         updatedStock.put("quantity", quantity);
         updatedStock.put("expDate", selectedExpiry);
 

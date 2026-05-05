@@ -76,16 +76,15 @@ public class PharmacyMap extends FragmentActivity implements OnMapReadyCallback 
 
         mMap.setMyLocationEnabled(true);
 
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(location -> {
-                    if (location != null) {
-                        LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+        fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+            if (location != null) {
+                LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
 
-                        fetchNearbyPharmacies(location);
-                    }
-                });
+                fetchNearbyPharmacies(location);
+            }
+        });
     }
 
     private void fetchNearbyPharmacies(Location location) {
@@ -97,34 +96,32 @@ public class PharmacyMap extends FragmentActivity implements OnMapReadyCallback 
 
         Log.d("MAP_URL", url);
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                response -> {
-                    try {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, response -> {
+            try {
 
-                        Log.d("MAP_RESPONSE", response.toString());
+                Log.d("MAP_RESPONSE", response.toString());
 
-                        JSONArray results = response.getJSONArray("results");
+                JSONArray results = response.getJSONArray("results");
 
-                        Log.d("MAP_RESULTS_COUNT", String.valueOf(results.length()));
+                Log.d("MAP_RESULTS_COUNT", String.valueOf(results.length()));
 
-                        for (int i = 0; i < results.length(); i++) {
+                for (int i = 0; i < results.length(); i++) {
 
-                            JSONObject obj = results.getJSONObject(i);
-                            JSONObject geo = obj.getJSONObject("geometry").getJSONObject("location");
+                    JSONObject obj = results.getJSONObject(i);
+                    JSONObject geo = obj.getJSONObject("geometry").getJSONObject("location");
 
-                            String name = obj.getString("name");
+                    String name = obj.getString("name");
 
-                            LatLng pos = new LatLng(geo.getDouble("lat"), geo.getDouble("lng"));
+                    LatLng pos = new LatLng(geo.getDouble("lat"), geo.getDouble("lng"));
 
-                            mMap.addMarker(new MarkerOptions().position(pos).title(name)
-                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-                        }
+                    mMap.addMarker(new MarkerOptions().position(pos).title(name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                }
 
-                    } catch (Exception e) {
-                        Log.e("MAP_ERROR", e.getMessage());
-                    }
-                },
-                error -> Log.e("MAP_ERROR", error.toString()));
+            } catch (Exception e) {
+                Log.e("MAP_ERROR", e.getMessage());
+            }
+
+        }, error -> Log.e("MAP_ERROR", error.toString()));
 
         queue.add(request);
     }

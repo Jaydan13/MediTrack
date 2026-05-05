@@ -18,6 +18,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.HashMap;
@@ -72,52 +73,32 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
 
             String userId = mAuth.getCurrentUser().getUid();
 
-            db.collection("users")
-                    .document(userId)
-                    .collection("inventory")
-                    .whereEqualTo("name", item.getName())
-                    .get()
-                    .addOnSuccessListener(querySnapshot -> {
+            String nameLower = item.getName().toLowerCase();
+            db.collection("users").document(userId).collection("inventory").whereEqualTo("nameLower", nameLower).get().addOnSuccessListener(querySnapshot -> {
 
-                        for (DocumentSnapshot doc : querySnapshot) {
+                for (DocumentSnapshot doc : querySnapshot) {
 
-                            Long currentQtyLong = doc.getLong("quantity");
-                            int currentQty = currentQtyLong != null ? currentQtyLong.intValue() : 0;
+                    Long currentQtyLong = doc.getLong("quantity");
+                    int currentQty = currentQtyLong != null ? currentQtyLong.intValue() : 0;
 
-                            int newQty = currentQty - item.getDosage();
+                    int newQty = currentQty - item.getDosage();
 
-                            if (newQty < 0) newQty = 0;
+                    if (newQty < 0) newQty = 0;
 
-                            doc.getReference().update("quantity", newQty);
+                    doc.getReference().update("quantity", newQty);
 
-                            if (newQty <= 5) {
+                    if (newQty <= 5) {
 
-                                Context context = v.getContext();
+                        Context context = v.getContext();
 
-                                String message = item.getName() + " is low in stock (" + newQty + ")";
+                        String message = item.getName() + " is low in stock (" + newQty + ")";
 
-                                StockNotificationHelper.sendLowStockNotification(context, message);
-                            }
-                        }
-                    });
+                        StockNotificationHelper.sendLowStockNotification(context, message);
+                    }
+                }
+            });
 
             AlarmHelper.cancelAlarm(v.getContext(), item.getId());
-
-            AlarmHelper.setAlarm(
-                    v.getContext(),
-                    item.getId(),
-                    item.getHour(),
-                    item.getMinute(),
-                    item.getName(),
-                    item.getDosage(),
-                    item.getIntervalNo(),
-                    item.getIntervalType(),
-                    item.getDurationNo(),
-                    item.getDurationType(),
-                    item.getStartTime()
-            );
-
-            long newTimeMillis = item.getStartTime();
 
             long intervalMillis;
 
@@ -131,22 +112,21 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
                 intervalMillis = intervalNo * 7 * 24 * 60 * 60 * 1000L;
             }
 
-            newTimeMillis = item.getStartTime() + intervalMillis;
+            long newTimeMillis = item.getStartTime() + intervalMillis;
 
+            db.collection("users").document(userId).collection("reminder").document(item.getId()).update("startTime", newTimeMillis);
 
-            db.collection("users")
-                    .document(userId)
-                    .collection("reminder")
-                    .document(item.getId())
-                    .update("startTime", newTimeMillis);
-
-            // update local model
-            item.setStartTime(newTimeMillis);
-
-            // update UI correctly
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            String timeString = sdf.format(newTimeMillis);
 
-            holder.time.setText("Time: " + sdf.format(new Date(newTimeMillis)));
+            db.collection("users").document(userId).collection("reminder").document(item.getId()).update("time", timeString);
+
+            holder.time.setText("Time: " + timeString);
+
+            AlarmHelper.setAlarm(v.getContext(), item.getId(), item.getHour(), item.getMinute(),
+                    item.getName(), item.getDosage(), item.getIntervalNo(), item.getIntervalType(),
+                    item.getDurationNo(), item.getDurationType(), item.getStartTime()
+            );
 
             holder.takenBtn.postDelayed(() -> {
                 holder.takenBtn.setEnabled(true);

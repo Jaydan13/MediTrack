@@ -1,7 +1,5 @@
 package com.example.meditrack;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,7 +9,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -20,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -103,10 +99,33 @@ public class AddReminder extends AppCompatActivity {
         });
 
         //Save Button
-        saveBtn.setOnClickListener(view -> {
-            saveReminder();
-        });
+        saveBtn.setOnClickListener(view -> checkInventory());
 
+    }
+    private void checkInventory() {
+        String name = medicationNameText.getText().toString().trim();
+
+        if (name.isEmpty()) {
+            medicationNameText.setError("Enter medicine name");
+            return;
+        }
+
+        userId = mAuth.getCurrentUser().getUid();
+
+        String nameLower = name.toLowerCase();
+        db.collection("users").document(userId).collection("inventory").whereEqualTo("nameLower", nameLower).get().addOnSuccessListener(querySnapshot -> {
+
+            if (querySnapshot.isEmpty()) {
+                medicationNameText.setError("Medicine not in inventory");
+                medicationNameText.requestFocus();
+                return;
+            }
+
+            saveReminder();
+
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Error checking inventory", Toast.LENGTH_SHORT).show();
+        });
     }
     private void saveReminder() {
         //Get all inputs
@@ -157,31 +176,20 @@ public class AddReminder extends AppCompatActivity {
         reminder.put("duration", duration);
         reminder.put("time", choose_time);
         reminder.put("startTime", System.currentTimeMillis());
+        reminder.put("intervalNo", intervalNo);
+        reminder.put("intervalType", intervalType);
         reminder.put("durationNo", durationNo);
         reminder.put("durationType", durationType);
 
         //Get reminder details from FireStore
         db.collection("users").document(userId).collection("reminder").document(reminderId).set(reminder).addOnSuccessListener(doc -> {
 
-                    //Set Alarm
-                    AlarmHelper.setAlarm(this,
-                            reminderId,
-                            selectedHour,
-                            selectedMinute,
-                            name,
-                            dosage,
-                            intervalNo,
-                            intervalType,
-                            durationNo,
-                            durationType,
-                            System.currentTimeMillis()
-                    );
+            AlarmHelper.setAlarm(this, reminderId, selectedHour, selectedMinute, name, dosage, intervalNo, intervalType, durationNo, durationType, System.currentTimeMillis());
 
-                    Toast.makeText(this, "Reminder Saved!", Toast.LENGTH_SHORT).show();
-                    finish();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                });
+            Toast.makeText(this, "Reminder Saved!", Toast.LENGTH_SHORT).show();
+            finish();
+        }).addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error!!!", Toast.LENGTH_LONG).show();
+        });
     }
 }
