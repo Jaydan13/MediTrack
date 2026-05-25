@@ -115,11 +115,11 @@ public class EditStock extends AppCompatActivity {
         updatedStock.put("expDate", selectedExpiry);
 
         db.collection("users").document(userId).collection("inventory").document(id).update(updatedStock).addOnSuccessListener(unused -> {
-            Toast.makeText(this, "Reminder Updated", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Stock Updated", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(EditStock.this, Inventory.class);
             startActivity(intent);
         }).addOnFailureListener(e -> {
-            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error: Stock Not Updated", Toast.LENGTH_SHORT).show();
         });
     }
 }
